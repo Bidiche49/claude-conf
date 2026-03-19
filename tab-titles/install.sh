@@ -122,8 +122,12 @@ _cc_dot() {
 _cc_set_tab() { printf "\033]1;%s\007" "$1"; }
 _cc_set_win() { printf "\033]2;%s\007" "$1"; }
 
+# Auto-check updates at Claude Code launch (once per day, non-blocking)
+_cc_check_updates() { command -v claude-conf &>/dev/null && claude-conf check 2>/dev/null; }
+
 # cc : session normale
 cc() {
+    _cc_check_updates
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "${d} CC"

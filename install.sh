@@ -72,6 +72,7 @@ install_module() {
     (cd "$module_dir" && bash install.sh)
 
     if [ $? -eq 0 ]; then
+        track_module "$module"
         echo ""
         echo -e "${GREEN}  ✓ ${module} installed successfully${NC}"
     else
@@ -95,7 +96,32 @@ show_modules() {
 
 # ── Main ──────────────────────────────────────────────────────────
 
+install_cli() {
+    # Install the claude-conf CLI to PATH
+    local bin_dir="$HOME/bin"
+    mkdir -p "$bin_dir"
+    cp "$SCRIPT_DIR/bin/claude-conf" "$bin_dir/claude-conf"
+    chmod +x "$bin_dir/claude-conf"
+
+    # Save repo path for the CLI to find
+    echo "$SCRIPT_DIR" > "$HOME/.claude-conf-path"
+
+    # Track installed modules
+    touch "$SCRIPT_DIR/.installed"
+}
+
+track_module() {
+    local mod="$1"
+    local file="$SCRIPT_DIR/.installed"
+    if ! grep -q "^${mod}$" "$file" 2>/dev/null; then
+        echo "$mod" >> "$file"
+    fi
+}
+
 show_banner
+
+# Always install the CLI first
+install_cli
 
 # Non-interactive mode: --all flag
 if [ "$1" = "--all" ]; then
