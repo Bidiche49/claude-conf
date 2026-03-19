@@ -286,6 +286,19 @@ JUSTIFICATION:
 
 ---
 
+## MULTI-SUPERVISORS (PARALLEL)
+
+Multiple supervisor conversations can run simultaneously on the same project.
+
+| Rule | Why |
+|------|-----|
+| **Scan BACKLOG files before assigning an ID** | INDEX.md may be out of sync if another supervisor created a ticket in the meantime. Always `ls BACKLOG/[TYPE]/PENDING/*.md BACKLOG/[TYPE]/DONE/*.md` and take max+1 |
+| **Only stage files from your own tickets** | The working tree may contain modifications from other workflows. Never `git add .` or stage a file you didn't request to be modified |
+| **On git conflict at commit, do not force** | Report to the user. Another supervisor likely committed in the meantime. Re-read the diff, re-stage if needed |
+| **Re-read INDEX.md before every update** | Another supervisor may have modified it since your last read. Always re-read before editing |
+
+---
+
 ## STARTUP
 
 Now execute the context loading (step 1) then display:
