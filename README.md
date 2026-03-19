@@ -36,6 +36,7 @@
 |--------|-------------|--------|
 | [**tab-titles**](tab-titles/) | Smart terminal tab titles that reflect session mode and project | ![Ready](https://img.shields.io/badge/status-ready-brightgreen?style=flat-square) |
 | [**handoff-kit**](handoff-kit/) | Context monitoring, automatic backups, and structured session handoff | ![Ready](https://img.shields.io/badge/status-ready-brightgreen?style=flat-square) |
+| [**supervisor**](supervisor/) | CTO mode — investigate, delegate to workers, validate, never write code | ![Ready](https://img.shields.io/badge/status-ready-brightgreen?style=flat-square) |
 
 Each module works **standalone** or as part of this collection. Install only what you need.
 
@@ -88,6 +89,14 @@ Monitors your context window usage in real time. Warns you before compaction hit
 **Components:** statusline display, context monitor hook, pre-compaction backup hook, `/handoff` slash command.
 
 [Full documentation >>>](handoff-kit/)
+
+### supervisor
+
+Turns Claude Code into a strict CTO that never writes code. It investigates problems, creates detailed tickets, generates scoped worker prompts for separate sessions, validates reports, and commits. The supervisor/worker split brings the rigor of a two-person review process to solo development.
+
+**Components:** `/supervisor` slash command.
+
+[Full documentation >>>](supervisor/)
 
 ## Requirements
 
@@ -144,6 +153,7 @@ module-name/
 |--------|-------------|--------|
 | [**tab-titles**](tab-titles/) | Titres d'onglets intelligents qui refletent le mode de session et le projet | ![Pret](https://img.shields.io/badge/statut-pret-brightgreen?style=flat-square) |
 | [**handoff-kit**](handoff-kit/) | Surveillance du contexte, sauvegardes automatiques et handoff structure | ![Pret](https://img.shields.io/badge/statut-pret-brightgreen?style=flat-square) |
+| [**supervisor**](supervisor/) | Mode CTO — investiguer, deleguer aux workers, valider, jamais ecrire de code | ![Pret](https://img.shields.io/badge/statut-pret-brightgreen?style=flat-square) |
 
 Chaque module fonctionne **de maniere autonome** ou au sein de cette collection. Installez uniquement ce dont vous avez besoin.
 
