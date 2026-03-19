@@ -111,39 +111,49 @@ else
 # ── Claude Code Tab Titles ───────────────────────────────────────
 # https://github.com/Bidiche49/claude-conf/tree/main/tab-titles
 
-# Couleur unique par projet (hash du nom → emoji cercle)
+# Couleur unique par projet (cksum = meme resultat bash/zsh)
+# Palette sans rouge ni vert (reserves pour SUP et WORKER)
 _cc_dot() {
-    local colors=("🔴" "🟠" "🟡" "🟢" "🔵" "🟣" "🟤" "⚪")
-    local hash=0 name="$1" i
-    for (( i=0; i<${#name}; i++ )); do
-        hash=$(( (hash * 31 + $(printf '%d' "'${name:$i:1}")) % ${#colors[@]} ))
-    done
-    echo "${colors[$hash]}"
+    local colors=(🟠 🟡 🔵 🟣 🟤 🩷 🩵 🟧)
+    local idx=$(( $(echo -n "$1" | cksum | cut -d' ' -f1) % 8 + 1 ))
+    echo "${colors[$idx]}"
 }
 
-# OSC 0 = set window + tab title
-_cc_set_title() { printf "\033]0;%s\007" "$1"; }
+_cc_set_tab() { printf "\033]1;%s\007" "$1"; }
+_cc_set_win() { printf "\033]2;%s\007" "$1"; }
 
+# cc : session normale
 cc() {
-    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
-    _cc_set_title "${d} ${p} — CC"
+    local p=$(basename "$PWD") d=$(_cc_dot "$p")
+    _cc_set_win "${d} ${p}"
+    _cc_set_tab "${d} CC"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude "$@"
 }
+
+# ccs : mode supervisor
 ccs() {
-    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
-    _cc_set_title "${d} ${p} — SUP"
+    local p=$(basename "$PWD") d=$(_cc_dot "$p")
+    _cc_set_win "${d} ${p}"
+    _cc_set_tab "🔴 SUP"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude "$@"
 }
+
+# ccd : mode dangerously-skip-permissions
 ccd() {
-    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
-    _cc_set_title "${d} ${p} — CC"
+    local p=$(basename "$PWD") d=$(_cc_dot "$p")
+    _cc_set_win "${d} ${p}"
+    _cc_set_tab "${d} CC"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude --dangerously-skip-permissions "$@"
 }
+
+# ccw : mode worker sur un ticket
+# Usage: ccw BUG-101
 ccw() {
     local label="${1:-WORK}"
     shift 2>/dev/null
-    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
-    _cc_set_title "${d} ${p} — ${label}"
+    local p=$(basename "$PWD") d=$(_cc_dot "$p")
+    _cc_set_win "${d} ${p}"
+    _cc_set_tab "🟢 ${label}"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude "$@"
 }
 

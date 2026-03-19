@@ -22,12 +22,16 @@ You're deep in a project. You have five Claude Code tabs open — a supervisor s
 
 | Command | Window Title | Tab Title | Use Case |
 |---------|-------------|-----------|----------|
-| `cc` | `🟣 my-project — CC` | `🟣 my-project — CC` | Normal session |
-| `ccs` | `🟣 my-project — SUP` | `🟣 my-project — SUP` | Supervisor mode |
-| `ccw BUG-101` | `🟣 my-project — BUG-101` | `🟣 my-project — BUG-101` | Worker on a ticket |
-| `ccd` | `🟣 my-project — CC` | `🟣 my-project — CC` | Skip-permissions mode |
+| `cc` | `🟣 my-project` | `🟣 CC` | Normal session |
+| `ccs` | `🟣 my-project` | `🔴 SUP` | Supervisor mode |
+| `ccw BUG-101` | `🟣 my-project` | `🟢 BUG-101` | Worker on a ticket |
+| `ccd` | `🟣 my-project` | `🟣 CC` | Skip-permissions mode |
 
-Each project gets a **unique color dot** (consistent hash — always the same color for the same project name). The project name is detected automatically from your working directory.
+**Window title** = project identification only (color dot + name). Never changes during a session.
+
+**Tab title** = current mode. Red for supervisor, green for worker, project color for normal.
+
+Each project gets a **unique color dot** (deterministic `cksum` hash — always the same color for the same project name, identical across bash and zsh). Red and green are reserved for mode indicators and never used as project colors.
 
 Titles update **dynamically** during the session — type `/supervisor` in a `cc` session and the title switches to `SUP` without restarting.
 
@@ -79,8 +83,9 @@ Two components work together:
 
 The installer adds `cc`, `ccs`, `ccw`, and `ccd` functions to your `.zshrc`. Each one:
 
-- Generates a unique color dot per project (deterministic hash)
-- Sets the window and tab title via the OSC 0 escape sequence
+- Generates a unique color dot per project (deterministic `cksum` hash, identical in bash and zsh)
+- Sets the window title via OSC 2 (project identification, never changes)
+- Sets the tab title via OSC 1 (current mode indicator)
 - Sets `CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1` to prevent Claude Code from overwriting it
 - Launches `claude` with any extra arguments you pass through
 
@@ -186,14 +191,18 @@ Vous travaillez sur un projet. Cinq onglets Claude Code ouverts — un supervise
 
 **tab-titles** donne a chaque session un titre d'onglet distinct et lisible, mis a jour en temps reel :
 
-| Commande | Titre fenetre + onglet | Usage |
-|----------|------------------------|-------|
-| `cc` | `🟣 mon-projet — CC` | Session normale |
-| `ccs` | `🟣 mon-projet — SUP` | Mode superviseur |
-| `ccw BUG-101` | `🟣 mon-projet — BUG-101` | Worker sur un ticket |
-| `ccd` | `🟣 mon-projet — CC` | Mode skip-permissions |
+| Commande | Titre fenetre | Titre onglet | Usage |
+|----------|---------------|--------------|-------|
+| `cc` | `🟣 mon-projet` | `🟣 CC` | Session normale |
+| `ccs` | `🟣 mon-projet` | `🔴 SUP` | Mode superviseur |
+| `ccw BUG-101` | `🟣 mon-projet` | `🟢 BUG-101` | Worker sur un ticket |
+| `ccd` | `🟣 mon-projet` | `🟣 CC` | Mode skip-permissions |
 
-Chaque projet recoit un **rond de couleur unique** (hash deterministe — toujours la meme couleur pour le meme projet). Le nom du projet est detecte automatiquement depuis votre repertoire de travail.
+**Titre fenetre** = identification du projet uniquement (couleur + nom). Ne change jamais.
+
+**Titre onglet** = mode actuel. Rouge pour superviseur, vert pour worker, couleur projet pour normal.
+
+Chaque projet recoit un **rond de couleur unique** (hash `cksum` deterministe — toujours la meme couleur, identique entre bash et zsh). Rouge et vert sont reserves aux indicateurs de mode.
 
 Les titres se mettent a jour **dynamiquement** — tapez `/supervisor` dans une session `cc` et le titre passe a `SUP` sans redemarrage.
 
