@@ -57,7 +57,6 @@ echo -e "${BLUE}[3/4]${NC} Configuration de Claude Code settings.json..."
 SETTINGS_FILE="$HOME/.claude/settings.json"
 
 if [ -f "$SETTINGS_FILE" ]; then
-    # Verifier si le hook est deja present
     if grep -q "tab-title.sh" "$SETTINGS_FILE"; then
         echo -e "${GREEN}✓${NC} Hook deja configure dans settings.json"
     else
@@ -111,25 +110,46 @@ else
 
 # ── Claude Code Tab Titles ───────────────────────────────────────
 # https://github.com/Bidiche49/claude-conf/tree/main/tab-titles
-_cc_set_title() { printf "\033]1;%s\007" "$1"; }
+
+# Couleur unique par projet (hash du nom → emoji cercle)
+_cc_dot() {
+    local colors=("🔴" "🟠" "🟡" "🟢" "🔵" "🟣" "🟤" "⚪")
+    local hash=0 name="$1" i
+    for (( i=0; i<${#name}; i++ )); do
+        hash=$(( (hash * 31 + $(printf '%d' "'${name:$i:1}")) % ${#colors[@]} ))
+    done
+    echo "${colors[$hash]}"
+}
+
+# OSC 0 = set window + tab title
+_cc_set_title() { printf "\033]0;%s\007" "$1"; }
 
 cc() {
-    _cc_set_title "⚡ CC · $(basename "$PWD")"
+    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
+    _cc_set_title "${d} ${p} — CC"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude "$@"
 }
 ccs() {
-    _cc_set_title "🔴 SUP · $(basename "$PWD")"
+    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
+    _cc_set_title "${d} ${p} — SUP"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude "$@"
 }
 ccd() {
-    _cc_set_title "⚡ CC · $(basename "$PWD")"
+    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
+    _cc_set_title "${d} ${p} — CC"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude --dangerously-skip-permissions "$@"
 }
 ccw() {
     local label="${1:-WORK}"
     shift 2>/dev/null
-    _cc_set_title "🟢 ${label} · $(basename "$PWD")"
+    local p=$(basename "$PWD") d=$(_cc_dot "$(basename "$PWD")")
+    _cc_set_title "${d} ${p} — ${label}"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude "$@"
+}
+
+# Titre intelligent pour shells normaux (non-Claude)
+precmd() {
+    printf "\033]0;%s — zsh\007" "$(basename "$PWD")"
 }
 # ── End Claude Code Tab Titles ───────────────────────────────────
 ALIASES
@@ -141,9 +161,15 @@ fi
 echo ""
 echo -e "${GREEN}── Installation terminee ! ──${NC}"
 echo ""
-echo "Etape manuelle requise (une seule fois) :"
-echo "  Terminal.app → Reglages → Profils → onglet Tab"
-echo "  → Decocher 'Active process name'"
+echo "Etapes manuelles requises (une seule fois) :"
+echo "  Terminal.app → Reglages → Profils → onglet Tab :"
+echo "    → Decocher 'Working directory or document'"
+echo "    → Decocher 'Active process name'"
+echo "    → Decocher 'Show activity indicator'"
+echo "  Terminal.app → Reglages → Profils → onglet Window :"
+echo "    → Decocher 'Working directory or document'"
+echo "    → Decocher 'Active process name'"
+echo "    → Garder 'Dimensions' coche"
 echo ""
 echo "Puis:"
 echo "  source ~/.zshrc"
@@ -153,3 +179,5 @@ echo "  cc           Session Claude Code normale"
 echo "  ccs          Mode supervisor"
 echo "  ccd          Mode skip-permissions"
 echo "  ccw BUG-101  Mode worker sur un ticket"
+echo ""
+echo "Chaque projet obtient automatiquement un rond de couleur unique."

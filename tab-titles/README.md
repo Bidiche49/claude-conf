@@ -20,16 +20,16 @@ You're deep in a project. You have five Claude Code tabs open — a supervisor s
 
 **tab-titles** gives each session a distinct, readable tab title that updates in real time:
 
-| Command | Tab Title | Use Case |
-|---------|-----------|----------|
-| `cc` | `⚡ CC · my-project` | Normal session |
-| `ccs` | `🔴 SUP · my-project` | Supervisor mode |
-| `ccw BUG-101` | `🟢 BUG-101 · my-project` | Worker on a ticket |
-| `ccd` | `⚡ CC · my-project` | Skip-permissions mode |
+| Command | Window Title | Tab Title | Use Case |
+|---------|-------------|-----------|----------|
+| `cc` | `🟣 my-project — CC` | `🟣 my-project — CC` | Normal session |
+| `ccs` | `🟣 my-project — SUP` | `🟣 my-project — SUP` | Supervisor mode |
+| `ccw BUG-101` | `🟣 my-project — BUG-101` | `🟣 my-project — BUG-101` | Worker on a ticket |
+| `ccd` | `🟣 my-project — CC` | `🟣 my-project — CC` | Skip-permissions mode |
 
-The project name is detected automatically from your working directory.
+Each project gets a **unique color dot** (consistent hash — always the same color for the same project name). The project name is detected automatically from your working directory.
 
-Titles update **dynamically** during the session — type `/supervisor` in a `cc` session and the title switches to `🔴 SUP` without restarting.
+Titles update **dynamically** during the session — type `/supervisor` in a `cc` session and the title switches to `SUP` without restarting.
 
 <!-- TODO: Add screenshot -->
 <!-- ![Demo](assets/demo.png) -->
@@ -55,9 +55,19 @@ source ~/.zshrc
 
 ### One-time Terminal.app setup
 
-Go to **Terminal > Settings > Profiles > Tab** and uncheck **"Active process name"**.
+Go to **Terminal > Settings > Profiles** and adjust both the **Tab** and **Window** panels:
 
-This prevents Terminal.app from overwriting custom tab titles with the running process name.
+**Tab panel:**
+- Uncheck "Working directory or document"
+- Uncheck "Active process name"
+- Uncheck "Show activity indicator"
+
+**Window panel:**
+- Uncheck "Working directory or document"
+- Uncheck "Active process name"
+- Keep "Dimensions" checked
+
+This prevents Terminal.app from overwriting custom titles with process names and paths.
 
 > **iTerm2 users:** Go to Preferences > Profiles > Terminal > uncheck "Terminal may set tab/window title".
 
@@ -69,7 +79,8 @@ Two components work together:
 
 The installer adds `cc`, `ccs`, `ccw`, and `ccd` functions to your `.zshrc`. Each one:
 
-- Sets the initial tab title via the OSC 1 escape sequence
+- Generates a unique color dot per project (deterministic hash)
+- Sets the window and tab title via the OSC 0 escape sequence
 - Sets `CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1` to prevent Claude Code from overwriting it
 - Launches `claude` with any extra arguments you pass through
 
@@ -175,16 +186,16 @@ Vous travaillez sur un projet. Cinq onglets Claude Code ouverts — un supervise
 
 **tab-titles** donne a chaque session un titre d'onglet distinct et lisible, mis a jour en temps reel :
 
-| Commande | Titre de l'onglet | Usage |
-|----------|-------------------|-------|
-| `cc` | `⚡ CC · mon-projet` | Session normale |
-| `ccs` | `🔴 SUP · mon-projet` | Mode superviseur |
-| `ccw BUG-101` | `🟢 BUG-101 · mon-projet` | Worker sur un ticket |
-| `ccd` | `⚡ CC · mon-projet` | Mode skip-permissions |
+| Commande | Titre fenetre + onglet | Usage |
+|----------|------------------------|-------|
+| `cc` | `🟣 mon-projet — CC` | Session normale |
+| `ccs` | `🟣 mon-projet — SUP` | Mode superviseur |
+| `ccw BUG-101` | `🟣 mon-projet — BUG-101` | Worker sur un ticket |
+| `ccd` | `🟣 mon-projet — CC` | Mode skip-permissions |
 
-Le nom du projet est detecte automatiquement depuis votre repertoire de travail.
+Chaque projet recoit un **rond de couleur unique** (hash deterministe — toujours la meme couleur pour le meme projet). Le nom du projet est detecte automatiquement depuis votre repertoire de travail.
 
-Les titres se mettent a jour **dynamiquement** — tapez `/supervisor` dans une session `cc` et le titre passe a `🔴 SUP` sans redemarrage.
+Les titres se mettent a jour **dynamiquement** — tapez `/supervisor` dans une session `cc` et le titre passe a `SUP` sans redemarrage.
 
 ## Installation
 
@@ -207,7 +218,17 @@ source ~/.zshrc
 
 ### Configuration Terminal.app (une seule fois)
 
-Allez dans **Terminal > Reglages > Profils > onglet Tab** et decochez **"Active process name"**.
+Allez dans **Terminal > Reglages > Profils** et ajustez les panneaux **Tab** et **Window** :
+
+**Panneau Tab :**
+- Decocher "Working directory or document"
+- Decocher "Active process name"
+- Decocher "Show activity indicator"
+
+**Panneau Window :**
+- Decocher "Working directory or document"
+- Decocher "Active process name"
+- Garder "Dimensions" coche
 
 > **Utilisateurs iTerm2 :** Preferences > Profiles > Terminal > decochez "Terminal may set tab/window title".
 
