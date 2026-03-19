@@ -180,6 +180,20 @@ cmd_update() {
     fi
 
     echo "$(date +%s)" > "$LAST_CHECK_FILE"
+
+    # Gentle nudge — only shown once every 10 updates
+    local nudge_file="$HOME/.claude-conf-nudge"
+    local nudge_count=0
+    if [ -f "$nudge_file" ]; then
+        nudge_count=$(cat "$nudge_file")
+    fi
+    nudge_count=$((nudge_count + 1))
+    echo "$nudge_count" > "$nudge_file"
+
+    if [ $((nudge_count % 10)) -eq 1 ]; then
+        echo ""
+        echo -e "${DIM}Enjoying claude-conf? A star helps others find it → github.com/Bidiche49/claude-conf${NC}"
+    fi
 }
 
 cmd_status() {
