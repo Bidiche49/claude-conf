@@ -42,6 +42,7 @@ if [ -z "$CONF_DIR" ]; then
 fi
 
 INSTALLED_FILE="$CONF_DIR/.installed"
+DISABLED_FILE="$HOME/.claude-conf-disabled"
 LAST_CHECK_FILE="$HOME/.claude-conf-last-check"
 
 # ── Helpers ───────────────────────────────────────────────────────
@@ -60,6 +61,10 @@ installed_modules() {
 
 is_installed() {
     grep -q "^$1$" "$INSTALLED_FILE" 2>/dev/null
+}
+
+is_disabled() {
+    grep -q "^$1$" "$DISABLED_FILE" 2>/dev/null
 }
 
 mark_installed() {
@@ -207,7 +212,11 @@ cmd_status() {
     echo ""
     for mod in $all; do
         if is_installed "$mod"; then
-            echo -e "  ${GREEN}●${NC} ${mod} ${DIM}(installed)${NC}"
+            if is_disabled "$mod"; then
+                echo -e "  ${YELLOW}●${NC} ${mod} ${DIM}(disabled)${NC}"
+            else
+                echo -e "  ${GREEN}●${NC} ${mod} ${DIM}(installed)${NC}"
+            fi
         else
             echo -e "  ${DIM}○${NC} ${mod}"
         fi
@@ -331,6 +340,43 @@ cmd_sync_fix() {
     cmd_sync
 }
 
+cmd_disable() {
+    local mod="$1"
+    if [ -z "$mod" ]; then
+        echo -e "${RED}Usage: claude-conf disable <module>${NC}"
+        return 1
+    fi
+    if ! is_installed "$mod"; then
+        echo -e "${RED}'${mod}' is not installed.${NC}"
+        return 1
+    fi
+    if is_disabled "$mod"; then
+        echo -e "${DIM}${mod} is already disabled.${NC}"
+        return 0
+    fi
+    touch "$DISABLED_FILE"
+    echo "$mod" >> "$DISABLED_FILE"
+    echo -e "${YELLOW}${mod} disabled.${NC} Hooks will be skipped, functions will passthrough."
+    echo -e "${DIM}Re-enable with: claude-conf enable ${mod}${NC}"
+}
+
+cmd_enable() {
+    local mod="$1"
+    if [ -z "$mod" ]; then
+        echo -e "${RED}Usage: claude-conf enable <module>${NC}"
+        return 1
+    fi
+    if ! is_disabled "$mod"; then
+        echo -e "${DIM}${mod} is already enabled.${NC}"
+        return 0
+    fi
+    # Remove from disabled file
+    local tmp=$(mktemp)
+    grep -v "^${mod}$" "$DISABLED_FILE" > "$tmp" 2>/dev/null || true
+    mv "$tmp" "$DISABLED_FILE"
+    echo -e "${GREEN}${mod} enabled.${NC}"
+}
+
 cmd_help() {
     echo -e "${BOLD}claude-conf${NC} — Manage your Claude Code configuration"
     echo ""
@@ -338,6 +384,8 @@ cmd_help() {
     echo "  update              Check and apply updates"
     echo "  status              Show installed/available modules"
     echo "  install <module>    Install a specific module"
+    echo "  disable <module>    Disable a module (keep installed)"
+    echo "  enable <module>     Re-enable a disabled module"
     echo "  sync                Check local files match repo"
     echo "  sync --fix          Fix desyncs (repo → local)"
     echo "  check               Quick update check (used internally)"
@@ -352,6 +400,8 @@ case "${1:-help}" in
     update)     cmd_update ;;
     status)     cmd_status ;;
     install)    cmd_install "$2" ;;
+    disable)    cmd_disable "$2" ;;
+    enable)     cmd_enable "$2" ;;
     sync)
         if [ "$2" = "--fix" ]; then
             cmd_sync_fix

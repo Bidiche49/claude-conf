@@ -3,6 +3,9 @@
 # Detecte le mode (supervisor/worker/normal) et le projet courant
 #
 # Priorite: supervisor > ticket > normal
+
+# Skip if module is disabled
+grep -q "^tab-titles$" "$HOME/.claude-conf-disabled" 2>/dev/null && exit 0
 # Titres:
 #   🔴 SUP · projet       (mode supervisor)
 #   🟢 BUG-101 · projet   (worker sur un ticket)

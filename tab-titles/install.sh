@@ -125,9 +125,13 @@ _cc_set_win() { printf "\033]2;%s\007" "$1"; }
 # Auto-check updates at Claude Code launch (once per day, non-blocking)
 _cc_check_updates() { command -v claude-conf &>/dev/null && claude-conf check 2>/dev/null; }
 
-# cc : session normale
+# Check if tab-titles module is disabled
+_cc_disabled() { grep -q "^tab-titles$" "$HOME/.claude-conf-disabled" 2>/dev/null; }
+
+# cc : session normale (also aliased as 'claude')
 cc() {
     _cc_check_updates
+    if _cc_disabled; then command claude "$@"; return; fi
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "${d} CC"
@@ -136,6 +140,8 @@ cc() {
 
 # ccs : mode supervisor
 ccs() {
+    _cc_check_updates
+    if _cc_disabled; then command claude "$@"; return; fi
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "🔴 SUP"
@@ -144,6 +150,8 @@ ccs() {
 
 # ccd : mode dangerously-skip-permissions
 ccd() {
+    _cc_check_updates
+    if _cc_disabled; then command claude --dangerously-skip-permissions "$@"; return; fi
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "${d} CC"
@@ -153,6 +161,8 @@ ccd() {
 # ccw : mode worker sur un ticket
 # Usage: ccw BUG-101
 ccw() {
+    _cc_check_updates
+    if _cc_disabled; then command claude "$@"; return; fi
     local label="${1:-WORK}"
     shift 2>/dev/null
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
@@ -160,6 +170,9 @@ ccw() {
     _cc_set_tab "🟢 ${label}"
     CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1 command claude "$@"
 }
+
+# 'claude' → 'cc' (tab titles always active)
+alias claude=cc
 
 # Titre intelligent pour shells normaux (non-Claude)
 precmd() {
