@@ -183,6 +183,20 @@ ALIASES
     echo -e "${GREEN}✓${NC} Aliases ajoutes dans .zshrc"
 fi
 
+# ── 5. oh-my-zsh auto-title ───────────────────────────────────────
+
+if grep -q 'oh-my-zsh' "$ZSHRC" 2>/dev/null; then
+    if grep -q '^# DISABLE_AUTO_TITLE="true"' "$ZSHRC" 2>/dev/null; then
+        sed -i '' 's/^# DISABLE_AUTO_TITLE="true"/DISABLE_AUTO_TITLE="true"/' "$ZSHRC"
+        echo -e "${GREEN}✓${NC} oh-my-zsh DISABLE_AUTO_TITLE enabled (was commented out)"
+    elif grep -q '^DISABLE_AUTO_TITLE="true"' "$ZSHRC" 2>/dev/null; then
+        echo -e "${GREEN}✓${NC} oh-my-zsh DISABLE_AUTO_TITLE already enabled"
+    else
+        echo -e "${YELLOW}!${NC} oh-my-zsh detected but DISABLE_AUTO_TITLE not found"
+        echo "  Add ${YELLOW}DISABLE_AUTO_TITLE=\"true\"${NC} to your .zshrc (before source oh-my-zsh)"
+    fi
+fi
+
 # ── Done ─────────────────────────────────────────────────────────
 
 echo ""
