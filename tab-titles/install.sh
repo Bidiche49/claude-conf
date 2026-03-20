@@ -176,7 +176,7 @@ alias claude=cc
 
 # Titre intelligent pour shells normaux (non-Claude)
 precmd() {
-    printf "\033]0;%s — zsh\007" "$(basename "$PWD")"
+    printf "\033]1;%s\007" "$(basename "$PWD") — zsh"
 }
 # ── End Claude Code Tab Titles ───────────────────────────────────
 ALIASES

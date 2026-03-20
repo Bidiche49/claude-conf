@@ -15,8 +15,9 @@
 | ID | Titre | Statut | Priorite |
 |----|-------|--------|----------|
 | BUG-001 | Tab-titles — worker sessions affichent SUP au lieu de WORK | Fait | Haute |
+| BUG-002 | Tab-titles — titre fenetre ecrase par precmd + Terminal.app | Fait | Haute |
 
-**Prochain ID suggere : BUG-002**
+**Prochain ID suggere : BUG-003**
 
 ## IMPROVEMENTS
 
