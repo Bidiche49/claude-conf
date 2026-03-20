@@ -5,8 +5,10 @@
 | ID | Titre | Statut | Priorite |
 |----|-------|--------|----------|
 | FEAT-001 | Module critical-thinking — anti-complaisance | Fait | Haute |
+| FEAT-002 | Module pre-commit-gate — rappel /check + commande /check | Fait | Haute |
+| FEAT-003 | Module oneshot — implementation rapide stack-agnostic | Fait | Basse |
 
-**Prochain ID suggere : FEAT-002**
+**Prochain ID suggere : FEAT-004**
 
 ## BUGS
 
@@ -21,7 +23,8 @@
 | ID | Titre | Statut | Priorite |
 |----|-------|--------|----------|
 | IMP-001 | Integration critical-thinking dans CLI + portabilite Linux | Fait | Moyenne |
-| IMP-002 | Supprimer step 3/4 (stagiaire) de install.sh | A faire | Basse |
-| IMP-003 | Ajouter shellcheck comme pre-requis dev | A faire | Basse |
+| IMP-002 | Supprimer step 3/4 (stagiaire) de install.sh | Fait | Basse |
+| IMP-003 | Ajouter shellcheck comme pre-requis dev | Fait | Basse |
+| IMP-004 | Supervisor — scope strict sur le commit en multi-supervisors | Fait | Haute |
 
-**Prochain ID suggere : IMP-004**
+**Prochain ID suggere : IMP-005**

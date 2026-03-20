@@ -52,6 +52,7 @@ On startup, automatically:
 3. `git log --oneline -10` and `git status`
 4. Read the latest handoff if it exists (`.claude-sessions/HANDOFF-*.md`)
 5. Identify the stack and project conventions (from CLAUDE.md)
+6. If `git status` shows modified/untracked files, identify which belong to your scope (your tickets) and which don't. Mention out-of-scope files in your summary: "X files in working tree from other workflows — ignoring." Never propose to commit, stage, or investigate files outside your scope.
 
 Summarize the state in 3-5 lines, then wait for instructions.
 
@@ -174,6 +175,10 @@ When the user brings back a worker report:
 If **OK**:
 - Inform the user: "The work is validated, I can commit"
 - Wait for user validation
+- **SCOPE RULE: stage ONLY the files listed in the worker's "Files modified" section.**
+  - Use `git add <file1> <file2> ...` with explicit file paths — NEVER `git add .` or `git add -A`
+  - If `git status` shows files NOT in the worker's report → IGNORE them. They belong to another workflow.
+  - Before committing, tell the user: "Staging these files: [list]. Other modified files in the working tree are out of my scope."
 - Commit with message conforming to `git-commit-rules.md` (reference tickets)
 - Move BACKLOG tickets to DONE
 - Update INDEX.md
@@ -316,6 +321,8 @@ JUSTIFICATION:
 ## MULTI-SUPERVISORS (PARALLEL)
 
 Multiple supervisor conversations can run simultaneously on the same project.
+
+**The commit scope rules in section 5 are the primary safeguard. The rules below are additional guardrails.**
 
 | Rule | Why |
 |------|-----|
