@@ -7,8 +7,9 @@
 | FEAT-001 | Module critical-thinking — anti-complaisance | Fait | Haute |
 | FEAT-002 | Module pre-commit-gate — rappel /check + commande /check | Fait | Haute |
 | FEAT-003 | Module oneshot — implementation rapide stack-agnostic | Fait | Basse |
+| FEAT-004 | Module backlog-kit — systeme de ticketing universel | Fait | Haute |
 
-**Prochain ID suggere : FEAT-004**
+**Prochain ID suggere : FEAT-005**
 
 ## BUGS
 
