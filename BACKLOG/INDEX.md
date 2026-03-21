@@ -63,7 +63,7 @@
 | IMP-021 | scope-enforcer — ajouter tests automatises | A faire | Basse |
 | IMP-022 | setup-project — integrer auto-start hook (contexte auto premier message) | A faire | Haute |
 
-| IMP-023 | supervisor — git diff scope aux fichiers du rapport (fausse scope violation) | A faire | Haute |
-| IMP-024 | supervisor — analyser problemes decouverts AVANT verdict global | A faire | Haute |
+| IMP-023 | supervisor — git diff scope aux fichiers du rapport (fausse scope violation) | Fait | Haute |
+| IMP-024 | supervisor — analyser problemes decouverts AVANT verdict global | Fait | Haute |
 
 **Prochain ID suggere : IMP-025**
