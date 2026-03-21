@@ -146,6 +146,9 @@ to modify a file not listed, note it in your report."
 \```markdown
 ## Report [TICKET-IDS]
 
+### Session
+- **Session ID:** [your session_id — find it in your context or use $SESSION_ID]
+
 ### Files modified
 - `path/to/file` — description of changes (1 line per file)
 
@@ -185,6 +188,11 @@ When the user brings back a worker report:
    - No regression introduced?
    - No out-of-scope code?
    - Do tests cover the fix?
+6. **Compare manifest vs report** — if `.claude-sessions/manifests/{session_id}.txt` exists:
+   - Read the manifest (list of all Write/Edit operations the worker actually performed)
+   - Compare with the "Files modified" section of the report
+   - If the manifest lists files NOT in the report → flag the divergence
+   - If the report lists files NOT in the manifest → suspicious, investigate
 
 If **OK**:
 - Inform the user: "The work is validated, I can commit"
