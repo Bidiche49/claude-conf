@@ -14,7 +14,7 @@
 | FEAT-008 | launch-worker — script lancement worker avec config cc/ccd | Fait | Haute |
 | FEAT-009 | supervisor-guard — hook PreToolUse bloquer Write/Edit en mode supervisor | A faire | Haute |
 | FEAT-010 | Module setup-project — bootstrap projet intelligent avec detection stack | Fait | Haute |
-| FEAT-011 | Module api-contract — gestion contrat API projets split | A faire | Haute |
+| FEAT-011 | Module api-contract — gestion contrat API projets split | Fait | Haute |
 | FEAT-012 | Module explore — exploration parallele structuree | A faire | Basse |
 
 **Prochain ID suggere : FEAT-013**
