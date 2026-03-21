@@ -205,6 +205,7 @@ If **OK**:
 - Move BACKLOG tickets to DONE
 - Update INDEX.md
 - Clean up scope files: `rm -f .claude-sessions/worker-scope/{session_id}.json`
+- Clean up launch files: `rm -f .claude-sessions/launch/worker-*.sh .claude-sessions/prompts/*.md`
 - **Tell the user: "You can close the worker conversation."**
 
 If **NOT OK**:
@@ -313,11 +314,35 @@ JUSTIFICATION:
 | **When in doubt = sequential** | Parallelism is only allowed when risk is ZERO |
 | **Each wave awaits validation** | Never launch wave 2 before wave 1 is validated and committed |
 
-#### Prompt generation
+#### Prompt generation and launch files
+
+For each worker prompt:
+
+1. **Write the prompt to a file:**
+   `.claude-sessions/prompts/{TICKET-ID}.md`
+
+2. **Write a launch script:**
+   ```bash
+   # .claude-sessions/launch/worker-{TICKET-ID}.sh
+   #!/bin/bash
+   source ~/.claude-conf/worker.conf 2>/dev/null
+   CMD="${WORKER_COMMAND:-cc}"
+   exec $CMD "$(cat .claude-sessions/prompts/{TICKET-ID}.md)"
+   ```
+
+3. **Tell the user:**
+   "Launch worker with: `bash .claude-sessions/launch/worker-{TICKET-ID}.sh`"
+   Or for manual flow: "The prompt is in `.claude-sessions/prompts/{TICKET-ID}.md`"
+
+4. **Also output the prompt as text in the conversation** (for copy-paste fallback).
+   The launch script is a shortcut, not a replacement of the clipboard flow.
+   The user chooses: script OR copy-paste.
+
+**Parallelism rules for prompts:**
 
 - If **parallel**: generate ALL prompts for the wave in a single response,
-  clearly separated and numbered. The user can paste them into separate
-  conversations simultaneously.
+  clearly separated and numbered. Write all prompt files and launch scripts.
+  The user can run the scripts in separate terminals simultaneously.
 - If **sequential**: generate ONLY the prompt for the first task. The next ones
   will be generated after the previous report is validated (because context will have changed).
 - Each worker prompt must mention the other parallel workers and which files

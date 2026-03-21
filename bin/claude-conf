@@ -6,6 +6,7 @@
 #   claude-conf update          Check and apply updates
 #   claude-conf status          Show installed/available modules
 #   claude-conf install <mod>   Install a specific module
+#   claude-conf config [k] [v]  Get/set configuration
 #   claude-conf check           Quick update check (used by cc functions)
 
 set -e
@@ -71,6 +72,79 @@ mark_installed() {
     if ! is_installed "$1"; then
         echo "$1" >> "$INSTALLED_FILE"
     fi
+}
+
+# ── Config ────────────────────────────────────────────────────────
+
+WORKER_CONF="$HOME/.claude-conf/worker.conf"
+
+cmd_config() {
+    local key="$1"
+    local value="$2"
+
+    # No arguments: display current config
+    if [ -z "$key" ]; then
+        echo -e "${BLUE}${BOLD}claude-conf config${NC}"
+        echo ""
+        if [ -f "$WORKER_CONF" ]; then
+            echo -e "${BOLD}Current config:${NC} ${WORKER_CONF}"
+            echo ""
+            while IFS='=' read -r k v; do
+                # Skip comments and empty lines
+                [[ "$k" =~ ^[[:space:]]*# ]] && continue
+                [ -z "$k" ] && continue
+                # Strip surrounding quotes from value
+                v="${v%\"}"
+                v="${v#\"}"
+                echo -e "  ${GREEN}${k}${NC}=${v}"
+            done < "$WORKER_CONF"
+        else
+            echo -e "${DIM}No config file found.${NC}"
+            echo -e "${DIM}Set a value with: claude-conf config worker-command <cc|ccd>${NC}"
+        fi
+        return 0
+    fi
+
+    # Known keys
+    case "$key" in
+        worker-command)
+            if [ -z "$value" ]; then
+                # Display current value for this key
+                if [ -f "$WORKER_CONF" ] && grep -q '^WORKER_COMMAND=' "$WORKER_CONF" 2>/dev/null; then
+                    local current
+                    current=$(grep '^WORKER_COMMAND=' "$WORKER_CONF" | head -1 | cut -d= -f2 | tr -d '"')
+                    echo -e "worker-command = ${GREEN}${current}${NC}"
+                else
+                    echo -e "worker-command = ${DIM}(not set, default: cc)${NC}"
+                fi
+                return 0
+            fi
+            # Validate value
+            if [ "$value" != "cc" ] && [ "$value" != "ccd" ]; then
+                echo -e "${RED}Invalid value '${value}'. Accepted: cc, ccd${NC}"
+                return 1
+            fi
+            # Write config
+            mkdir -p "$(dirname "$WORKER_CONF")"
+            if [ -f "$WORKER_CONF" ] && grep -q '^WORKER_COMMAND=' "$WORKER_CONF" 2>/dev/null; then
+                # Update existing value
+                local tmp
+                tmp=$(mktemp)
+                sed "s/^WORKER_COMMAND=.*/WORKER_COMMAND=\"${value}\"/" "$WORKER_CONF" > "$tmp"
+                mv "$tmp" "$WORKER_CONF"
+            else
+                echo "WORKER_COMMAND=\"${value}\"" >> "$WORKER_CONF"
+            fi
+            echo -e "${GREEN}worker-command set to '${value}'${NC}"
+            ;;
+        *)
+            echo -e "${RED}Unknown config key '${key}'.${NC}"
+            echo ""
+            echo "Available keys:"
+            echo "  worker-command    Command to launch workers (cc or ccd)"
+            return 1
+            ;;
+    esac
 }
 
 # ── Commands ──────────────────────────────────────────────────────
@@ -398,6 +472,7 @@ cmd_help() {
     echo "  install <module>    Install a specific module"
     echo "  disable <module>    Disable a module (keep installed)"
     echo "  enable <module>     Re-enable a disabled module"
+    echo "  config [key] [val]  Get/set configuration"
     echo "  sync                Check local files match repo"
     echo "  sync --fix          Fix desyncs (repo → local)"
     echo "  check               Quick update check (used internally)"
@@ -414,6 +489,7 @@ case "${1:-help}" in
     install)    cmd_install "$2" ;;
     disable)    cmd_disable "$2" ;;
     enable)     cmd_enable "$2" ;;
+    config)     cmd_config "$2" "$3" ;;
     sync)
         if [ "$2" = "--fix" ]; then
             cmd_sync_fix
