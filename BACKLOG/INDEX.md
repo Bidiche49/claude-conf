@@ -10,7 +10,7 @@
 | FEAT-004 | Module backlog-kit — systeme de ticketing universel | Fait | Haute |
 | FEAT-005 | Module claude-md-kit — cleanup, boost, init pour CLAUDE.md projet | Fait | Haute |
 | FEAT-006 | scope-enforcer — hook PreToolUse bloquer ecriture hors scope worker | Fait | Haute |
-| FEAT-007 | PostToolUse hook — manifest fichiers modifies + detection tests fail | A faire | Haute |
+| FEAT-007 | PostToolUse hook — manifest fichiers modifies + detection tests fail | Fait | Haute |
 | FEAT-008 | launch-worker — script lancement worker avec config cc/ccd | A faire | Haute |
 | FEAT-009 | supervisor-guard — hook PreToolUse bloquer Write/Edit en mode supervisor | A faire | Haute |
 | FEAT-010 | Module setup-project — bootstrap projet intelligent avec detection stack | Fait | Haute |
