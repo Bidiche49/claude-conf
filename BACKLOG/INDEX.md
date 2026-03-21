@@ -65,5 +65,6 @@
 
 | IMP-023 | supervisor — git diff scope aux fichiers du rapport (fausse scope violation) | Fait | Haute |
 | IMP-024 | supervisor — analyser problemes decouverts AVANT verdict global | Fait | Haute |
+| IMP-025 | Tests automatises pour les 5 modules sans couverture | A faire | Moyenne |
 
-**Prochain ID suggere : IMP-025**
+**Prochain ID suggere : IMP-026**
