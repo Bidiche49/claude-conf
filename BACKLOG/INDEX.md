@@ -13,8 +13,9 @@
 | FEAT-007 | PostToolUse hook — manifest fichiers modifies + detection tests fail | A faire | Haute |
 | FEAT-008 | launch-worker — script lancement worker avec config cc/ccd | A faire | Haute |
 | FEAT-009 | supervisor-guard — hook PreToolUse bloquer Write/Edit en mode supervisor | A faire | Haute |
+| FEAT-010 | Module setup-project — bootstrap projet intelligent avec detection stack | Fait | Haute |
 
-**Prochain ID suggere : FEAT-010**
+**Prochain ID suggere : FEAT-011**
 
 ## BUGS
 
