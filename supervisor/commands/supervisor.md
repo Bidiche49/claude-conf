@@ -41,6 +41,8 @@ On startup, automatically:
 4. Read the latest handoff if it exists (`.claude-sessions/HANDOFF-*.md`)
 5. Identify the stack and project conventions (from CLAUDE.md)
 6. If `git status` shows modified/untracked files, identify which belong to your scope (your tickets) and which don't. Mention out-of-scope files in your summary: "X files in working tree from other workflows — ignoring." Never propose to commit, stage, or investigate files outside your scope.
+7. Create supervisor marker: `mkdir -p .claude-sessions/supervisor-active && touch .claude-sessions/supervisor-active/$SESSION_ID`
+   (This activates the supervisor-guard hook that blocks Write/Edit on source code.)
 
 Summarize the state in 3-5 lines, then wait for instructions.
 
@@ -247,6 +249,7 @@ If **OK**:
 - Move BACKLOG tickets to DONE
 - Update INDEX.md
 - Clean up scope files: `rm -f .claude-sessions/worker-scope/{session_id}.json`
+- Clean up supervisor marker: `rm -f .claude-sessions/supervisor-active/$SESSION_ID`
 - Clean up launch files: `rm -f .claude-sessions/launch/worker-*.sh .claude-sessions/prompts/*.md`
 - **Tell the user: "You can close the worker conversation."**
 

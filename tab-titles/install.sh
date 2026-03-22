@@ -103,10 +103,18 @@ echo -e "${BLUE}[4/4]${NC} Configuration des aliases shell..."
 ZSHRC="$HOME/.zshrc"
 MARKER="# ── Claude Code Tab Titles"
 
+END_MARKER="# ── End Claude Code Tab Titles"
+
 if grep -q "$MARKER" "$ZSHRC" 2>/dev/null; then
-    echo -e "${GREEN}✓${NC} Aliases deja presents dans .zshrc"
-else
-    cat >> "$ZSHRC" << 'ALIASES'
+    echo -e "${YELLOW}!${NC} Updating existing tab-titles block in .zshrc..."
+    if [[ "$(uname)" == "Darwin" ]]; then
+        sed -i '' "/$MARKER/,/$END_MARKER/d" "$ZSHRC"
+    else
+        sed -i "/$MARKER/,/$END_MARKER/d" "$ZSHRC"
+    fi
+fi
+
+cat >> "$ZSHRC" << 'ALIASES'
 
 # ── Claude Code Tab Titles ───────────────────────────────────────
 # https://github.com/Bidiche49/claude-conf/tree/main/tab-titles
@@ -176,13 +184,14 @@ ccw() {
 alias claude=cc
 
 # Titre intelligent pour shells normaux (non-Claude)
-precmd() {
+precmd_claude_conf() {
     printf "\033]1;%s\007" "$(basename "$PWD") — zsh"
 }
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd precmd_claude_conf
 # ── End Claude Code Tab Titles ───────────────────────────────────
 ALIASES
-    echo -e "${GREEN}✓${NC} Aliases ajoutes dans .zshrc"
-fi
+echo -e "${GREEN}✓${NC} Tab-titles block installed in .zshrc"
 
 # ── 5. oh-my-zsh auto-title ───────────────────────────────────────
 

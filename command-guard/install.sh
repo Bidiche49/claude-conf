@@ -22,7 +22,7 @@ NC='\033[0m'
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 INSTALL_DIR="$HOME/.claude/scripts/command-guard"
 SETTINGS_FILE="$HOME/.claude/settings.json"
-HOOK_COMMAND="bun $INSTALL_DIR/src/cli.ts"
+HOOK_COMMAND="$HOME/.claude/hooks/command-guard-wrapper.sh"
 
 # ── Banner ───────────────────────────────────────────────────────
 
@@ -78,6 +78,21 @@ cp "$SCRIPT_DIR/package.json" "$INSTALL_DIR/package.json"
 cp "$SCRIPT_DIR/tsconfig.json" "$INSTALL_DIR/tsconfig.json"
 
 echo -e "  ${GREEN}OK${NC} Source files copied to ${DIM}${INSTALL_DIR}${NC}"
+
+# ── Pre-build for faster hook execution ─────────────────────
+
+echo ""
+echo -e "  ${BOLD}Building optimized bundle...${NC}"
+mkdir -p "$INSTALL_DIR/dist"
+(cd "$INSTALL_DIR" && bun build src/cli.ts --outfile dist/cli.js --target bun)
+echo -e "  ${GREEN}OK${NC} Bundle built ${DIM}(dist/cli.js)${NC}"
+
+# ── Install wrapper script ──────────────────────────────────
+
+mkdir -p "$HOME/.claude/hooks"
+cp "$SCRIPT_DIR/hooks/command-guard-wrapper.sh" "$HOME/.claude/hooks/command-guard-wrapper.sh"
+chmod +x "$HOME/.claude/hooks/command-guard-wrapper.sh"
+echo -e "  ${GREEN}OK${NC} Wrapper installed ${DIM}($HOME/.claude/hooks/command-guard-wrapper.sh)${NC}"
 
 # ── Create data directory ────────────────────────────────────────
 
