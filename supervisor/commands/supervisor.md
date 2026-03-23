@@ -181,20 +181,24 @@ to modify a file not listed, note it in your report."
 When the user brings back a worker report:
 
 1. **Read the report** carefully
-2. **Check modified files** — read each file touched, verify coherence
-3. **Run checks** — the project's linter, analyzer, test suite (from CLAUDE.md)
-4. **Check the diff (SCOPED)** — use `git diff -- file1 file2 file3` scoped to the files listed in the worker's "Files modified" section. NEVER run a global `git diff` — the working tree may contain changes from other parallel workers. Other changes are NOT this worker's responsibility — do not evaluate or flag them. If the post-tool-use manifest exists for this worker's session_id (`.claude-sessions/manifests/{session_id}.txt`), use it as the mechanical source of truth for which files were actually touched.
-5. **Evaluate quality**:
+2. **Pre-validation via manifest** (FIRST — before any diff or file reading):
+   - Read `.claude-sessions/manifests/{session_id}.txt` (the session_id is in the report)
+   - This is the **mechanical source of truth** — every Write/Edit the worker actually performed
+   - Compare manifest vs "Files modified" in the report:
+     - Manifest lists files NOT in report → flag divergence
+     - Report lists files NOT in manifest → suspicious, investigate
+   - Compare manifest vs scope file (`.claude-sessions/worker-scope/{session_id}.json`):
+     - Any file in manifest but NOT in allowed_files → scope violation
+   - If manifest doesn't exist → fall back to git diff for file verification
+3. **Check the diff (SCOPED)** — use `git diff -- file1 file2 file3` scoped to the files from the manifest (or report if no manifest). NEVER run a global `git diff` — the working tree may contain changes from other parallel workers.
+4. **Check modified files** — read each file touched, verify coherence with the ticket requirements
+5. **Run checks** — the project's linter, analyzer, test suite (from CLAUDE.md)
+6. **Evaluate quality**:
    - Is the root cause actually fixed?
    - No band-aid fix?
    - No regression introduced?
    - No out-of-scope code?
    - Do tests cover the fix?
-6. **Compare manifest vs report** — if `.claude-sessions/manifests/{session_id}.txt` exists:
-   - Read the manifest (list of all Write/Edit operations the worker actually performed)
-   - Compare with the "Files modified" section of the report
-   - If the manifest lists files NOT in the report → flag the divergence
-   - If the report lists files NOT in the manifest → suspicious, investigate
 7. **Analyze discovered problems and missing tests** (MANDATORY)
 
    **Every report contains a "Problems discovered (not fixed)" section. You NEVER treat it as optional.**
