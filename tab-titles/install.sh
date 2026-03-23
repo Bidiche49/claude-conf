@@ -134,12 +134,28 @@ _cc_set_win() { printf "\033]2;%s\007" "$1"; }
 # Auto-check updates at Claude Code launch (once per day, non-blocking)
 _cc_check_updates() { command -v claude-conf &>/dev/null && claude-conf check 2>/dev/null; }
 
+# Prompt user if update available (reads flag written by claude-conf check)
+_cc_update_prompt() {
+    local flag="$HOME/.claude-conf-update-available"
+    [[ -f "$flag" ]] || return 0
+    local count=$(cat "$flag" 2>/dev/null)
+    echo ""
+    echo -e "\033[1;33m[claude-conf]\033[0m ${count:-New} update(s) available."
+    echo -ne "  Update now? \033[1m[y/N]\033[0m "
+    read -r answer
+    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+        claude-conf update
+    fi
+    rm -f "$flag"
+}
+
 # Check if tab-titles module is disabled
 _cc_disabled() { grep -q "^tab-titles$" "$HOME/.claude-conf-disabled" 2>/dev/null; }
 
 # cc : session normale (also aliased as 'claude')
 cc() {
     _cc_check_updates
+    _cc_update_prompt
     if _cc_disabled; then command claude "$@"; return; fi
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
@@ -150,6 +166,7 @@ cc() {
 # ccs : mode supervisor
 ccs() {
     _cc_check_updates
+    _cc_update_prompt
     if _cc_disabled; then command claude "$@"; return; fi
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
@@ -160,6 +177,7 @@ ccs() {
 # ccd : mode dangerously-skip-permissions
 ccd() {
     _cc_check_updates
+    _cc_update_prompt
     if _cc_disabled; then command claude --dangerously-skip-permissions "$@"; return; fi
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
@@ -171,6 +189,7 @@ ccd() {
 # Usage: ccw BUG-101
 ccw() {
     _cc_check_updates
+    _cc_update_prompt
     if _cc_disabled; then command claude "$@"; return; fi
     local label="${1:-WORK}"
     shift 2>/dev/null

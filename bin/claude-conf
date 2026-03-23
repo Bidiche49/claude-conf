@@ -184,7 +184,11 @@ cmd_check() {
 
     if [ "$local_head" != "$remote_head" ]; then
         local count=$(git -C "$CONF_DIR" rev-list HEAD..origin/main --count 2>/dev/null)
-        echo -e "${YELLOW}[claude-conf]${NC} ${count} update(s) available. Run ${BOLD}claude-conf update${NC}"
+        # Write flag file for aliases to pick up at next launch
+        echo "$count" > "$HOME/.claude-conf-update-available"
+    else
+        # No update — clear flag if it exists
+        rm -f "$HOME/.claude-conf-update-available"
     fi
 }
 
