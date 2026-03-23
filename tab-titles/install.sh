@@ -47,8 +47,10 @@ mkdir -p "$HOOK_DIR"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cp "$SCRIPT_DIR/hooks/tab-title.sh" "$HOOK_DIR/tab-title.sh"
 chmod +x "$HOOK_DIR/tab-title.sh"
+cp "$SCRIPT_DIR/hooks/session-tab-title.sh" "$HOOK_DIR/session-tab-title.sh"
+chmod +x "$HOOK_DIR/session-tab-title.sh"
 
-echo -e "${GREEN}✓${NC} Hook installe dans $HOOK_DIR/tab-title.sh"
+echo -e "${GREEN}✓${NC} Hooks installes dans $HOOK_DIR/"
 
 # ── 3. Configurer settings.json ──────────────────────────────────
 
@@ -58,7 +60,7 @@ SETTINGS_FILE="$HOME/.claude/settings.json"
 
 if [ -f "$SETTINGS_FILE" ]; then
     if grep -q "tab-title.sh" "$SETTINGS_FILE"; then
-        echo -e "${GREEN}✓${NC} Hook deja configure dans settings.json"
+        echo -e "${GREEN}✓${NC} Hook UserPromptSubmit deja configure dans settings.json"
     else
         echo -e "${YELLOW}!${NC} settings.json existe deja."
         echo "  Ajoute manuellement ce bloc dans hooks.UserPromptSubmit :"
@@ -73,7 +75,22 @@ if [ -f "$SETTINGS_FILE" ]; then
         echo '      ]'
         echo '    }'
         echo ""
-        echo "  Voir README.md section 'Configuration manuelle' pour details."
+    fi
+    if grep -q "session-tab-title.sh" "$SETTINGS_FILE"; then
+        echo -e "${GREEN}✓${NC} Hook SessionStart deja configure dans settings.json"
+    else
+        echo -e "${YELLOW}!${NC} Ajoute manuellement ce bloc dans hooks.SessionStart :"
+        echo ""
+        echo '    {'
+        echo '      "matcher": "",'
+        echo '      "hooks": ['
+        echo '        {'
+        echo '          "type": "command",'
+        echo '          "command": "~/.claude/hooks/session-tab-title.sh"'
+        echo '        }'
+        echo '      ]'
+        echo '    }'
+        echo ""
     fi
 else
     cat > "$SETTINGS_FILE" << 'SETTINGS'
@@ -89,11 +106,22 @@ else
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/session-tab-title.sh"
+          }
+        ]
+      }
     ]
   }
 }
 SETTINGS
-    echo -e "${GREEN}✓${NC} settings.json cree avec le hook"
+    echo -e "${GREEN}✓${NC} settings.json cree avec les hooks"
 fi
 
 # ── 4. Ajouter les aliases shell ─────────────────────────────────
@@ -160,6 +188,8 @@ cc() {
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "${d} CC"
+    export CC_TAB_TITLE="${d} CC"
+    export CC_WIN_TITLE="${d} ${p}"
     export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1
     command claude "$@"
 }
@@ -172,6 +202,8 @@ ccs() {
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "🔴 SUP"
+    export CC_TAB_TITLE="🔴 SUP"
+    export CC_WIN_TITLE="${d} ${p}"
     export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1
     command claude "$@"
 }
@@ -184,6 +216,8 @@ ccd() {
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "${d} CC"
+    export CC_TAB_TITLE="${d} CC"
+    export CC_WIN_TITLE="${d} ${p}"
     export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1
     command claude --dangerously-skip-permissions "$@"
 }
@@ -199,6 +233,8 @@ ccw() {
     local p=$(basename "$PWD") d=$(_cc_dot "$p")
     _cc_set_win "${d} ${p}"
     _cc_set_tab "🟢 ${label}"
+    export CC_TAB_TITLE="🟢 ${label}"
+    export CC_WIN_TITLE="${d} ${p}"
     export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1
     command claude "$@"
 }

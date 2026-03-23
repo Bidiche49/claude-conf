@@ -346,6 +346,9 @@ For each worker prompt:
    # Tab + window titles
    printf "\033]1;🟢 %s\007" "$TICKET"
    printf "\033]2;🟢 %s — %s\007" "$TICKET" "$(basename "$PWD")"
+   # Env vars for SessionStart hook (re-applies title after Ink init)
+   export CC_TAB_TITLE="🟢 $TICKET"
+   export CC_WIN_TITLE="🟢 $TICKET — $(basename "$PWD")"
    # Prevent Claude Code from overwriting titles
    export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1
    if [ "$MODE" = "dangerous" ]; then
