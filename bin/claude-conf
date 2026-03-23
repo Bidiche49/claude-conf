@@ -349,6 +349,7 @@ cmd_sync() {
         case "$mod" in
             tab-titles)
                 _sync_file "$mod" "hooks/tab-title.sh" "$HOME/.claude/hooks/tab-title.sh"
+                _sync_file "$mod" "hooks/session-tab-title.sh" "$HOME/.claude/hooks/session-tab-title.sh"
                 ;;
             handoff-kit)
                 _sync_file "$mod" "hooks/context-monitor.sh" "$HOME/.claude/hooks/context-monitor.sh"
