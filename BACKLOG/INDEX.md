@@ -15,7 +15,7 @@
 | FEAT-009 | supervisor-guard — hook PreToolUse pour bloquer Write/Edit en mode supervisor | Fait | Haute |
 | FEAT-010 | Module setup-project — bootstrap projet intelligent avec detection stack | Fait | Haute |
 | FEAT-011 | Module api-contract — gestion du contrat API pour projets split | Fait | Haute |
-| FEAT-012 | Module explore — exploration parallele structuree | A faire | Basse |
+| FEAT-012 | Module explore — exploration parallele structuree | Fait | Basse |
 
 **Prochain ID : FEAT-013**
 
@@ -60,7 +60,7 @@
 | IMP-019 | handoff-kit — ajouter tests automatises pour context-monitor.sh | Fait | Basse |
 | IMP-020 | README.md — ajouter sections Module Overview pour les 4 nouveaux modules | Fait | Basse |
 | IMP-021 | scope-enforcer — ajouter tests automatises | Fait | Basse |
-| IMP-022 | setup-project — integrer auto-start hook (contexte auto premier message) | A faire | Haute |
+| IMP-022 | setup-project — integrer auto-start hook (contexte auto premier message) | Fait | Haute |
 | IMP-023 | supervisor — git diff scope aux fichiers du rapport (fausse scope violation) | Fait | Haute |
 | IMP-024 | supervisor — analyser problemes decouverts AVANT verdict global | Fait | Haute |
 | IMP-025 | Tests automatises pour les 5 modules sans couverture | Fait | Moyenne |
