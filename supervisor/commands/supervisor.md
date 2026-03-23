@@ -335,17 +335,25 @@ For each worker prompt:
    # .claude-sessions/launch/worker-{TICKET-ID}.sh
    #!/bin/bash
    source ~/.claude-conf/worker.conf 2>/dev/null
-   CMD="${WORKER_COMMAND:-cc}"
-   exec $CMD "$(cat .claude-sessions/prompts/{TICKET-ID}.md)"
+   MODE="${WORKER_MODE:-normal}"
+   if [ "$MODE" = "dangerous" ]; then
+       exec claude --dangerously-skip-permissions "$(cat .claude-sessions/prompts/{TICKET-ID}.md)"
+   else
+       exec claude "$(cat .claude-sessions/prompts/{TICKET-ID}.md)"
+   fi
    ```
+   NOTE: The script uses `claude` directly (not `cc`/`ccd` which are zsh functions
+   unavailable in bash subshells). The WORKER_MODE config controls the permission mode.
 
 3. **Tell the user:**
-   "Launch worker with: `bash .claude-sessions/launch/worker-{TICKET-ID}.sh`"
-   Or for manual flow: "The prompt is in `.claude-sessions/prompts/{TICKET-ID}.md`"
+   ```
+   ⚠️ Launch workers via the script ONLY — do NOT copy-paste the summary below.
+   bash .claude-sessions/launch/worker-{TICKET-ID}.sh
+   ```
 
-4. **Also output the prompt as text in the conversation** (for copy-paste fallback).
-   The launch script is a shortcut, not a replacement of the clipboard flow.
-   The user chooses: script OR copy-paste.
+4. **Show a brief summary in the conversation** (ticket ID + scope + 1-line description per task).
+   This summary is for the user's REFERENCE ONLY — it is NOT the worker prompt.
+   Mark it clearly: "📋 Résumé (référence uniquement — le prompt complet est dans le launch script)"
 
 **Parallelism rules for prompts:**
 

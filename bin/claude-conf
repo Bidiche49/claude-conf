@@ -100,42 +100,42 @@ cmd_config() {
             done < "$WORKER_CONF"
         else
             echo -e "${DIM}No config file found.${NC}"
-            echo -e "${DIM}Set a value with: claude-conf config worker-command <cc|ccd>${NC}"
+            echo -e "${DIM}Set a value with: claude-conf config worker-mode <normal|dangerous>${NC}"
         fi
         return 0
     fi
 
     # Known keys
     case "$key" in
-        worker-command)
+        worker-mode)
             if [ -z "$value" ]; then
                 # Display current value for this key
-                if [ -f "$WORKER_CONF" ] && grep -q '^WORKER_COMMAND=' "$WORKER_CONF" 2>/dev/null; then
+                if [ -f "$WORKER_CONF" ] && grep -q '^WORKER_MODE=' "$WORKER_CONF" 2>/dev/null; then
                     local current
-                    current=$(grep '^WORKER_COMMAND=' "$WORKER_CONF" | head -1 | cut -d= -f2 | tr -d '"')
-                    echo -e "worker-command = ${GREEN}${current}${NC}"
+                    current=$(grep '^WORKER_MODE=' "$WORKER_CONF" | head -1 | cut -d= -f2 | tr -d '"')
+                    echo -e "worker-mode = ${GREEN}${current}${NC}"
                 else
-                    echo -e "worker-command = ${DIM}(not set, default: cc)${NC}"
+                    echo -e "worker-mode = ${DIM}(not set, default: normal)${NC}"
                 fi
                 return 0
             fi
             # Validate value
-            if [ "$value" != "cc" ] && [ "$value" != "ccd" ]; then
-                echo -e "${RED}Invalid value '${value}'. Accepted: cc, ccd${NC}"
+            if [ "$value" != "normal" ] && [ "$value" != "dangerous" ]; then
+                echo -e "${RED}Invalid value '${value}'. Accepted: normal, dangerous${NC}"
                 return 1
             fi
             # Write config
             mkdir -p "$(dirname "$WORKER_CONF")"
-            if [ -f "$WORKER_CONF" ] && grep -q '^WORKER_COMMAND=' "$WORKER_CONF" 2>/dev/null; then
+            if [ -f "$WORKER_CONF" ] && grep -q '^WORKER_MODE=' "$WORKER_CONF" 2>/dev/null; then
                 # Update existing value
                 local tmp
                 tmp=$(mktemp)
-                sed "s/^WORKER_COMMAND=.*/WORKER_COMMAND=\"${value}\"/" "$WORKER_CONF" > "$tmp"
+                sed "s/^WORKER_MODE=.*/WORKER_MODE=\"${value}\"/" "$WORKER_CONF" > "$tmp"
                 mv "$tmp" "$WORKER_CONF"
             else
-                echo "WORKER_COMMAND=\"${value}\"" >> "$WORKER_CONF"
+                echo "WORKER_MODE=\"${value}\"" >> "$WORKER_CONF"
             fi
-            echo -e "${GREEN}worker-command set to '${value}'${NC}"
+            echo -e "${GREEN}worker-mode set to '${value}'${NC}"
             ;;
         *)
             echo -e "${RED}Unknown config key '${key}'.${NC}"
