@@ -29,7 +29,7 @@
 | BUG-004 | install.sh — footgun ((count++)) avec set -e | Fait | Haute |
 | BUG-005 | tab-titles — couleurs par projet toujours blanches | Fait | Moyenne |
 | BUG-006 | tab-titles — sed -i casse Linux | Fait | Moyenne |
-| BUG-007 | command-guard — regex rm -rf ne matche pas fin de string | Fait | Haute |
+| BUG-007 | command-guard — regex rm-rf ne matche pas fin de string | Fait | Haute |
 | BUG-008 | handoff — PreCompact hook JSON (faux positif, JSON valide) | Fait | Moyenne |
 | BUG-009 | tab-titles — precmd() ecrase les precmd existants (oh-my-zsh, p10k) | Fait | Moyenne |
 
@@ -40,8 +40,8 @@
 | ID | Titre | Statut | Priorite |
 |----|-------|--------|----------|
 | IMP-001 | Integration critical-thinking dans CLI + portabilite Linux | Fait | Moyenne |
-| IMP-002 | Supprimer step 3/4 (stagiaire) de critical-thinking/install.sh | A faire | Basse |
-| IMP-003 | Ajouter shellcheck comme pre-requis dev | A faire | Basse |
+| IMP-002 | Supprimer step 3/4 (stagiaire) de critical-thinking/install.sh | Fait | Basse |
+| IMP-003 | Ajouter shellcheck comme pre-requis dev | Fait | Basse |
 | IMP-004 | Supervisor — scope strict sur le commit en multi-supervisors | Fait | Haute |
 | IMP-005 | handoff — supprimer CRITICAL auto-execute, garder WARNING only | Fait | Moyenne |
 | IMP-006 | supervisor — dedupliquer bloc POSTURE vs CLAUDE.md critical-thinking | Fait | Basse |
@@ -51,15 +51,15 @@
 | IMP-010 | worker rapport — ajouter section tests manquants (boy scout) | Fait | Moyenne |
 | IMP-011 | command-guard — pre-bundle avec bun build pour eliminer le cold start | Fait | Haute |
 | IMP-012 | command-guard — wrapper shell pre-filter pour skip non-Bash | Fait | Haute |
-| IMP-013 | command-guard — appendFile au lieu de read+write pour le log | A faire | Basse |
-| IMP-014 | CLAUDE.md — reduire section backlog au strict minimum | A faire | Basse |
+| IMP-013 | command-guard — appendFile au lieu de read+write pour le log | Fait | Basse |
+| IMP-014 | CLAUDE.md — reduire section backlog au strict minimum | Fait | Basse |
 | IMP-015 | tab-titles — mise a jour du bloc .zshrc existant a la reinstall | Fait | Haute |
-| IMP-016 | install.sh — ajouter tests automatises basiques | A faire | Basse |
-| IMP-017 | tab-titles — ajouter tests automatises basiques | A faire | Basse |
-| IMP-018 | handoff-kit — ajouter tests automatises pour pre-compact-handoff.sh | A faire | Basse |
-| IMP-019 | handoff-kit — ajouter tests automatises pour context-monitor.sh | A faire | Basse |
-| IMP-020 | README.md — ajouter sections Module Overview pour les 4 nouveaux modules | A faire | Basse |
-| IMP-021 | scope-enforcer — ajouter tests automatises | A faire | Basse |
+| IMP-016 | install.sh — ajouter tests automatises basiques | Fait | Basse |
+| IMP-017 | tab-titles — ajouter tests automatises basiques | Fait | Basse |
+| IMP-018 | handoff-kit — ajouter tests automatises pour pre-compact-handoff.sh | Fait | Basse |
+| IMP-019 | handoff-kit — ajouter tests automatises pour context-monitor.sh | Fait | Basse |
+| IMP-020 | README.md — ajouter sections Module Overview pour les 4 nouveaux modules | Fait | Basse |
+| IMP-021 | scope-enforcer — ajouter tests automatises | Fait | Basse |
 | IMP-022 | setup-project — integrer auto-start hook (contexte auto premier message) | A faire | Haute |
 | IMP-023 | supervisor — git diff scope aux fichiers du rapport (fausse scope violation) | Fait | Haute |
 | IMP-024 | supervisor — analyser problemes decouverts AVANT verdict global | Fait | Haute |
