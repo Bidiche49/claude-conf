@@ -40,22 +40,33 @@ CURRENT_STATE=$(cat "$STATE_FILE" 2>/dev/null || echo "CC")
 if echo "$PROMPT" | head -1 | grep -qiE '^[[:space:]]*/supervisor'; then
     echo "SUP" > "$STATE_FILE"
 elif [ -n "$PROMPT" ]; then
-    # Detecter un ticket ou un prompt worker (PRIORITE sur tout sauf /supervisor)
-    # Un prompt worker contient ABSOLUTE WORKER RULES ou STRICT SCOPE
+    # Detect worker prompt markers
     IS_WORKER_PROMPT=false
     echo "$PROMPT" | grep -qE '(ABSOLUTE WORKER RULES|STRICT SCOPE)' && IS_WORKER_PROMPT=true
 
     TICKET_MATCH=$(echo "$PROMPT" | grep -oE '(BUG|FEAT|IMP)-[0-9]+' | head -1)
 
-    if [ -n "$TICKET_MATCH" ]; then
-        CONTEXT=$(echo "$PROMPT" | sed "s/.*${TICKET_MATCH}[^a-zA-Z]*//" | head -1 | cut -c1-30 | sed 's/[[:space:]]*$//')
-        if [ -n "$CONTEXT" ]; then
-            echo "WORK:${TICKET_MATCH}:${CONTEXT}" > "$STATE_FILE"
-        else
+    if [ "$CURRENT_STATE" = "SUP" ]; then
+        # SUP is sticky — only a real worker prompt can override it
+        # A supervisor mentioning ticket IDs in conversation does NOT switch to worker
+        if [ "$IS_WORKER_PROMPT" = true ] && [ -n "$TICKET_MATCH" ]; then
             echo "WORK:${TICKET_MATCH}" > "$STATE_FILE"
+        elif [ "$IS_WORKER_PROMPT" = true ]; then
+            echo "WORK:WORKER" > "$STATE_FILE"
         fi
-    elif [ "$IS_WORKER_PROMPT" = true ]; then
-        echo "WORK:WORKER" > "$STATE_FILE"
+        # else: stay SUP
+    else
+        # Normal or worker state — ticket detection works normally
+        if [ -n "$TICKET_MATCH" ]; then
+            CONTEXT=$(echo "$PROMPT" | sed "s/.*${TICKET_MATCH}[^a-zA-Z]*//" | head -1 | cut -c1-30 | sed 's/[[:space:]]*$//')
+            if [ -n "$CONTEXT" ]; then
+                echo "WORK:${TICKET_MATCH}:${CONTEXT}" > "$STATE_FILE"
+            else
+                echo "WORK:${TICKET_MATCH}" > "$STATE_FILE"
+            fi
+        elif [ "$IS_WORKER_PROMPT" = true ]; then
+            echo "WORK:WORKER" > "$STATE_FILE"
+        fi
     fi
 fi
 
