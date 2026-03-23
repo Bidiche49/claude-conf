@@ -63,7 +63,8 @@
 | IMP-022 | setup-project — integrer auto-start hook (contexte auto premier message) | A faire | Haute |
 | IMP-023 | supervisor — git diff scope aux fichiers du rapport (fausse scope violation) | Fait | Haute |
 | IMP-024 | supervisor — analyser problemes decouverts AVANT verdict global | Fait | Haute |
-| IMP-025 | Tests automatises pour les 5 modules sans couverture | A faire | Moyenne |
-| IMP-026 | command-guard — cleanup ancien hook lors upgrade | A faire | Moyenne |
+| IMP-025 | Tests automatises pour les 5 modules sans couverture | Fait | Moyenne |
+| IMP-026 | command-guard — cleanup ancien hook lors upgrade | Fait | Moyenne |
+| IMP-027 | install.sh — ajouter les 4 modules manquants au MODULES array | Fait | Haute |
 
-**Prochain ID : IMP-027**
+**Prochain ID : IMP-028**
