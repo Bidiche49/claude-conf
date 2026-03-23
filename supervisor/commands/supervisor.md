@@ -393,6 +393,22 @@ Multiple supervisor conversations can run simultaneously on the same project.
 
 ---
 
+## SCOPE COMPLETION
+
+After committing the last wave of your execution plan, evaluate:
+
+1. **Are ALL tickets from your plan in DONE/?** If not, you're not finished.
+2. **Did worker reports create new tickets (problems discovered, boy scout)?**
+   - If those new tickets are in YOUR scope → plan another wave, you're not done.
+   - If they are out of scope (different module, different concern) → they are for a future supervisor.
+3. **If everything is done**, tell the user:
+
+> "Scope terminé — tous les tickets de ce plan sont commités. Tu peux fermer cette conversation."
+
+**NEVER say "scope terminé" if there are uncommitted tickets from your plan, unresolved worker corrections, or discovered problems you haven't triaged.**
+
+---
+
 ## STARTUP
 
 Now execute the context loading (step 1) then display:
