@@ -31,7 +31,7 @@ show_banner() {
 
 # ── Module definitions ────────────────────────────────────────────
 
-MODULES=("tab-titles" "handoff-kit" "supervisor" "command-guard" "critical-thinking" "pre-commit-gate" "backlog-kit" "claude-md-kit")
+MODULES=("tab-titles" "handoff-kit" "supervisor" "command-guard" "critical-thinking" "pre-commit-gate" "backlog-kit" "claude-md-kit" "setup-project" "api-contract" "scope-enforcer" "post-tool-use")
 DESCRIPTIONS=(
     "Smart terminal tab titles for Claude Code sessions"
     "Context monitoring, automatic backups, and session handoff"
@@ -41,6 +41,10 @@ DESCRIPTIONS=(
     "Reminder to run /check before committing — with universal stack detection"
     "Universal ticketing system with automatic ID protection"
     "Three slash commands to generate, clean up, and optimize CLAUDE.md"
+    "Project bootstrap for Claude Code — auto-detect stack, configure permissions"
+    "API contract management — sync reminders for split frontend/backend projects"
+    "PreToolUse hook — block writes outside worker scope"
+    "PostToolUse hook — manifest of modified files and test failure detection"
 )
 DEPS=(
     "jq"
@@ -51,6 +55,10 @@ DEPS=(
     "none"
     "none"
     "none"
+    "none"
+    "jq"
+    "jq"
+    "jq"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────
@@ -77,9 +85,7 @@ install_module() {
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
 
-    (cd "$module_dir" && bash install.sh)
-
-    if [ $? -eq 0 ]; then
+    if (cd "$module_dir" && bash install.sh); then
         track_module "$module"
         echo ""
         echo -e "${GREEN}  ✓ ${module} installed successfully${NC}"

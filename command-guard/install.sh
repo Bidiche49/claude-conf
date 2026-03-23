@@ -130,6 +130,17 @@ if [ -f "$SETTINGS_FILE" ]; then
     HAS_PRE_TOOL_USE=$(echo "$CURRENT" | jq 'has("hooks") and (.hooks | has("PreToolUse"))' 2>/dev/null)
 
     if [ "$HAS_PRE_TOOL_USE" = "true" ]; then
+        # Clean up legacy command-guard / command-validator entries
+        LEGACY_COUNT=$(echo "$CURRENT" | jq '
+            [.hooks.PreToolUse[] | select(.hooks[0].command | (contains("command-guard") or contains("command-validator")))] | length
+        ')
+        if [ "$LEGACY_COUNT" -gt 0 ]; then
+            CURRENT=$(echo "$CURRENT" | jq '
+                .hooks.PreToolUse |= [.[] | select(.hooks[0].command | (contains("command-guard") or contains("command-validator")) | not)]
+            ')
+            echo -e "  ${GREEN}↑${NC} Cleaned up ${LEGACY_COUNT} legacy command-guard hook(s)"
+        fi
+
         # Check if command-guard hook is already present
         ALREADY_INSTALLED=$(echo "$CURRENT" | jq --arg cmd "$HOOK_COMMAND" '
             .hooks.PreToolUse[]? |
