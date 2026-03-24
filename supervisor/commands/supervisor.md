@@ -149,7 +149,7 @@ to modify a file not listed, note it in your report."
 ## Report [TICKET-IDS]
 
 ### Session
-- **Session ID:** [your session_id — find it in your context or use $SESSION_ID]
+- **Manifest:** [path to your manifest file in `.claude-sessions/manifests/` — run `ls -t .claude-sessions/manifests/*.txt | head -1` to find it. If not found, write "none"]
 
 ### Files modified
 - `path/to/file` — description of changes (1 line per file)
@@ -182,14 +182,17 @@ When the user brings back a worker report:
 
 1. **Read the report** carefully
 2. **Pre-validation via manifest** (FIRST — before any diff or file reading):
-   - Read `.claude-sessions/manifests/{session_id}.txt` (the session_id is in the report)
+   - **Read the manifest** at the path given in the worker's report ("Manifest:" field).
+     - If the path exists → use it directly. No search needed.
+     - If the path is "none" or the file doesn't exist → **fallback: scan ALL manifests** in `.claude-sessions/manifests/` and match by content (look for files listed in the worker's "Files modified" section). Pick the most recent manifest that touches the same files.
+     - **NEVER skip manifest verification.** "No manifest path" means search harder, not skip.
    - This is the **mechanical source of truth** — every Write/Edit the worker actually performed
    - Compare manifest vs "Files modified" in the report:
      - Manifest lists files NOT in report → flag divergence
      - Report lists files NOT in manifest → suspicious, investigate
-   - Compare manifest vs scope file (`.claude-sessions/worker-scope/{session_id}.json`):
+   - Compare manifest vs scope file (`.claude-sessions/worker-scope/*.json` matching the ticket ID):
      - Any file in manifest but NOT in allowed_files → scope violation
-   - If manifest doesn't exist → fall back to git diff for file verification
+   - If NO manifest exists at all (directory empty or no match) → fall back to git diff, but **log a warning**: "No manifest found — relying on git diff only"
 3. **Check the diff (SCOPED)** — use `git diff -- file1 file2 file3` scoped to the files from the manifest (or report if no manifest). NEVER run a global `git diff` — the working tree may contain changes from other parallel workers.
 4. **Check modified files** — read each file touched, verify coherence with the ticket requirements
 5. **Run checks** — the project's linter, analyzer, test suite (from CLAUDE.md)
