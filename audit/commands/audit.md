@@ -144,7 +144,10 @@ For each confirmed finding:
 
 ## Step 7 — Report
 
-Generate the report and save to `audit-reports/YYYY-MM-DD_HH-MM.md`:
+Generate the report and save to `audit-reports/YYYY-MM-DD_HH-MM.md`.
+
+**The filename MUST include the hour and minute** (e.g., `2026-03-26_14-30.md`).
+Use `date +%Y-%m-%d_%H-%M` to generate it. Never use date-only filenames — multiple audits per day would collide.
 
 ```markdown
 # Audit Report — [project name]
@@ -198,6 +201,14 @@ Generate the report and save to `audit-reports/YYYY-MM-DD_HH-MM.md`:
 
 - [Suggestion 1 — description + rationale]
 - [Suggestion 2]
+
+## Recommended treatment order
+
+1. [TICKET-ID] (SEVERITY) — [why first: impact, quick win, dependency]
+2. [TICKET-ID] (SEVERITY) — [reason]
+3. ...
+
+Group quick wins (XS complexity) that can be batched together.
 
 ## Tickets created
 
