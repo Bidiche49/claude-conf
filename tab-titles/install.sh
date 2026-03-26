@@ -234,6 +234,23 @@ ccw() {
     command claude "$@"
 }
 
+# ccup : mise a jour complete claude-conf (pull + reinstall + reload)
+ccup() {
+    local conf_dir
+    conf_dir=$(cat "$HOME/.claude-conf-path" 2>/dev/null)
+    if [ -z "$conf_dir" ] || [ ! -d "$conf_dir/.git" ]; then
+        echo "claude-conf repo not found. Run install.sh first."
+        return 1
+    fi
+    echo "Pulling latest..."
+    git -C "$conf_dir" pull || return 1
+    echo "Reinstalling all modules..."
+    bash "$conf_dir/install.sh" --all
+    echo "Reloading shell..."
+    source ~/.zshrc
+    echo "Done."
+}
+
 # 'claude' → 'cc' (tab titles always active)
 alias claude=cc
 
