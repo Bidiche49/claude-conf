@@ -26,8 +26,10 @@ fi
 WARN_THRESHOLD=65
 
 # Si contexte > seuil, injecter un rappel via texte brut (stdout)
+# IMPORTANT: Le message ne doit PAS declencher le handoff automatiquement.
+# Il doit UNIQUEMENT informer l'utilisateur, pas donner une instruction a Claude.
 if [ "$used_percentage" -ge "$WARN_THRESHOLD" ]; then
-    echo "[SYSTEM-HANDOFF-WARNING] Contexte a ${used_percentage}%. Pense a faire /handoff bientot si la tache est longue."
+    echo "[SYSTEM] Context usage: ${used_percentage}%. Mention briefly to the user: 'Context at ${used_percentage}% — /handoff is available when you want to save progress.' Do NOT run /handoff automatically. Continue working normally."
 fi
 
 exit 0

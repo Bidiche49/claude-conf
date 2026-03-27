@@ -69,6 +69,8 @@ DEPS=(
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+QUIET_MODE=0
+
 install_module() {
     local module="$1"
     local module_dir="$SCRIPT_DIR/$module"
@@ -83,20 +85,32 @@ install_module() {
         return 1
     fi
 
-    echo ""
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BOLD}  Installing: ${module}${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-
-    if (cd "$module_dir" && bash install.sh); then
-        track_module "$module"
-        echo ""
-        echo -e "${GREEN}  ✓ ${module} installed successfully${NC}"
+    if [ "$QUIET_MODE" -eq 1 ]; then
+        # Quiet mode: one line per module, suppress sub-installer output
+        if (cd "$module_dir" && bash install.sh > /dev/null 2>&1); then
+            track_module "$module"
+            echo -e "  ${GREEN}✓${NC} ${module}"
+        else
+            echo -e "  ${RED}✗${NC} ${module} ${DIM}(failed)${NC}"
+            return 1
+        fi
     else
+        # Verbose mode: full output from sub-installers
         echo ""
-        echo -e "${RED}  ✗ ${module} installation failed${NC}"
-        return 1
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BOLD}  Installing: ${module}${NC}"
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+
+        if (cd "$module_dir" && bash install.sh); then
+            track_module "$module"
+            echo ""
+            echo -e "${GREEN}  ✓ ${module} installed successfully${NC}"
+        else
+            echo ""
+            echo -e "${RED}  ✗ ${module} installation failed${NC}"
+            return 1
+        fi
     fi
 }
 
@@ -216,9 +230,11 @@ show_banner
 install_cli
 install_shell_aliases
 
-# Non-interactive mode: --all flag
+# Non-interactive mode: --all flag (quiet output)
 if [ "$1" = "--all" ]; then
+    QUIET_MODE=1
     echo -e "${BOLD}  Installing all modules...${NC}"
+    echo ""
 
     success=0
     failed=0
