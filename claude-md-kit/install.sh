@@ -15,7 +15,7 @@ DIM='\033[2m'
 NC='\033[0m'
 
 CLAUDE_DIR="$HOME/.claude"
-COMMANDS_DIR="$CLAUDE_DIR/commands"
+SKILLS_DIR="$CLAUDE_DIR/skills"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 COMMANDS=("claude-md-init" "claude-md-cleanup" "claude-md-boost")
@@ -39,25 +39,28 @@ fi
 
 echo -e "${GREEN}  ✓${NC} Claude Code available"
 
-# ── 2. Install commands ──────────────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in claude-md-init claude-md-cleanup claude-md-boost; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[2/2]${NC} Installing commands..."
+# ── 2. Install skills ────────────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[2/2]${NC} Installing skills..."
 
 for cmd in "${COMMANDS[@]}"; do
-    if [ ! -f "$SCRIPT_DIR/commands/${cmd}.md" ]; then
-        echo -e "${RED}  ✗ Source file not found: commands/${cmd}.md${NC}"
+    src="$SCRIPT_DIR/skills/${cmd}/SKILL.md"
+    dst="$SKILLS_DIR/${cmd}/SKILL.md"
+
+    if [ ! -f "$src" ]; then
+        echo -e "${RED}  ✗ Source file not found: skills/${cmd}/SKILL.md${NC}"
         exit 1
     fi
 
-    if [ -f "$COMMANDS_DIR/${cmd}.md" ]; then
-        cp "$COMMANDS_DIR/${cmd}.md" "$COMMANDS_DIR/${cmd}.md.backup.$(date +%Y%m%d%H%M%S)"
-        echo -e "${YELLOW}  !${NC} Existing /${cmd} backed up"
-    fi
-
-    cp "$SCRIPT_DIR/commands/${cmd}.md" "$COMMANDS_DIR/${cmd}.md"
-    echo -e "${GREEN}  ✓${NC} /${cmd} installed"
+    mkdir -p "$SKILLS_DIR/${cmd}"
+    cp "$src" "$dst"
+    echo -e "${GREEN}  ✓${NC} /${cmd} skill installed"
 done
 
 # ── Done ─────────────────────────────────────────────────────────
@@ -65,10 +68,10 @@ done
 echo ""
 echo -e "${GREEN}  ── Installation complete ──${NC}"
 echo ""
-echo -e "  ${BOLD}Commands installed:${NC}"
+echo -e "  ${BOLD}Skills installed:${NC}"
 echo -e "    ${BOLD}/claude-md-init${NC}     Generate a CLAUDE.md from scratch"
 echo -e "    ${BOLD}/claude-md-cleanup${NC}  Remove duplicates with global config"
 echo -e "    ${BOLD}/claude-md-boost${NC}    Optimize with prompt engineering + stack best practices"
 echo ""
-echo -e "  ${DIM}Restart Claude Code for commands to become available.${NC}"
+echo -e "  ${DIM}Restart Claude Code for skills to become available.${NC}"
 echo ""

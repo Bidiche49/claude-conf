@@ -12,7 +12,7 @@ FAIL=0
 setup() {
   TMPDIR=$(mktemp -d)
   export HOME="$TMPDIR/fakehome"
-  mkdir -p "$HOME/.claude/commands"
+  mkdir -p "$HOME/.claude/skills"
 }
 
 teardown() {
@@ -67,9 +67,9 @@ FAKECLAUDE
   rc=$?
   set -e
   assert_exit 0 $rc "install.sh exits 0"
-  assert_file_exists "$HOME/.claude/commands/setup-project.md" "setup-project.md created"
-  assert_file_exists "$HOME/.claude/commands/start.md" "start.md created"
-  assert_file_exists "$HOME/.claude/commands/review.md" "review.md created"
+  assert_file_exists "$HOME/.claude/skills/setup-project/SKILL.md" "skills/setup-project/SKILL.md created"
+  assert_file_exists "$HOME/.claude/skills/start/SKILL.md" "skills/start/SKILL.md created"
+  assert_file_exists "$HOME/.claude/skills/review/SKILL.md" "skills/review/SKILL.md created"
   teardown
 }
 
@@ -93,7 +93,7 @@ FAKECLAUDE
 
   # Check no duplicate main files (backups are ok)
   local count
-  count=$(find "$HOME/.claude/commands" -name "setup-project.md" -not -name "*.bak" | wc -l | tr -d ' ')
+  count=$(find "$HOME/.claude/skills/setup-project" -name "SKILL.md" | wc -l | tr -d ' ')
   if [ "$count" -eq 1 ]; then
     echo "  PASS: idempotence — no duplicate files"
     PASS=$((PASS + 1))

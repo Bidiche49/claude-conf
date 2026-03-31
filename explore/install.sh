@@ -1,6 +1,6 @@
 #!/bin/bash
 # ── explore — Install Script ────────────────────────────────────
-# Installs the /explore command for Claude Code
+# Installs the /explore skill for Claude Code
 #
 # Usage: bash install.sh
 
@@ -18,7 +18,7 @@ NC='\033[0m'
 # ── Paths ─────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-COMMANDS_DIR="$HOME/.claude/commands"
+SKILLS_DIR="$HOME/.claude/skills"
 
 # ── Banner ────────────────────────────────────────────────────────
 
@@ -40,29 +40,34 @@ if ! command -v claude &>/dev/null; then
 fi
 echo -e "${GREEN}  ✓${NC} Claude Code available"
 
-# ── 2/2. Install command ─────────────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in explore; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[2/2]${NC} Installing /explore command..."
+# ── 2/2. Install skill ───────────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[2/2]${NC} Installing /explore skill..."
 
-src="$SCRIPT_DIR/commands/explore.md"
-dst="$COMMANDS_DIR/explore.md"
+src="$SCRIPT_DIR/skills/explore/SKILL.md"
+dst="$SKILLS_DIR/explore/SKILL.md"
 
 if [ ! -f "$src" ]; then
-    echo -e "${RED}  ✗ Source not found: commands/explore.md${NC}"
+    echo -e "${RED}  ✗ Source not found: skills/explore/SKILL.md${NC}"
     exit 1
 fi
 
+mkdir -p "$SKILLS_DIR/explore"
 cp "$src" "$dst"
-echo -e "${GREEN}  ✓${NC} Command installed"
+echo -e "${GREEN}  ✓${NC} Skill installed"
 
 # ── Done ──────────────────────────────────────────────────────────
 
 echo ""
 echo -e "${GREEN}  ── Installation complete ──${NC}"
 echo ""
-echo -e "  ${BOLD}Command installed:${NC}"
+echo -e "  ${BOLD}Skill installed:${NC}"
 echo -e "    /explore <topic>  — deep parallel exploration of codebase, docs, and web"
 echo ""
 echo -e "  ${BOLD}Process:${NC}"

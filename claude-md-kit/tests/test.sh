@@ -12,7 +12,7 @@ FAIL=0
 setup() {
   TMPDIR=$(mktemp -d)
   export HOME="$TMPDIR/fakehome"
-  mkdir -p "$HOME/.claude/commands"
+  mkdir -p "$HOME/.claude/skills"
 }
 
 teardown() {
@@ -68,9 +68,9 @@ FAKECLAUDE
   rc=$?
   set -e
   assert_exit 0 $rc "install.sh exits 0"
-  assert_file_exists "$HOME/.claude/commands/claude-md-init.md" "claude-md-init.md created"
-  assert_file_exists "$HOME/.claude/commands/claude-md-cleanup.md" "claude-md-cleanup.md created"
-  assert_file_exists "$HOME/.claude/commands/claude-md-boost.md" "claude-md-boost.md created"
+  assert_file_exists "$HOME/.claude/skills/claude-md-init/SKILL.md" "skills/claude-md-init/SKILL.md created"
+  assert_file_exists "$HOME/.claude/skills/claude-md-cleanup/SKILL.md" "skills/claude-md-cleanup/SKILL.md created"
+  assert_file_exists "$HOME/.claude/skills/claude-md-boost/SKILL.md" "skills/claude-md-boost/SKILL.md created"
   teardown
 }
 
@@ -94,7 +94,7 @@ FAKECLAUDE
 
   # Check that commands exist (not duplicated — just one file per command)
   local count
-  count=$(find "$HOME/.claude/commands" -name "claude-md-init.md" -not -name "*.backup.*" | wc -l | tr -d ' ')
+  count=$(find "$HOME/.claude/skills/claude-md-init" -name "SKILL.md" | wc -l | tr -d ' ')
   if [ "$count" -eq 1 ]; then
     echo "  PASS: idempotence — no duplicate files"
     PASS=$((PASS + 1))

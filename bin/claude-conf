@@ -354,16 +354,47 @@ cmd_sync() {
             handoff-kit)
                 _sync_file "$mod" "hooks/context-monitor.sh" "$HOME/.claude/hooks/context-monitor.sh"
                 _sync_file "$mod" "hooks/pre-compact-handoff.sh" "$HOME/.claude/hooks/pre-compact-handoff.sh"
-                _sync_file "$mod" "commands/handoff.md" "$HOME/.claude/commands/handoff.md"
+                _sync_file "$mod" "skills/handoff/SKILL.md" "$HOME/.claude/skills/handoff/SKILL.md"
                 ;;
             supervisor)
-                _sync_file "$mod" "commands/supervisor.md" "$HOME/.claude/commands/supervisor.md"
+                _sync_file "$mod" "skills/supervisor/SKILL.md" "$HOME/.claude/skills/supervisor/SKILL.md"
                 ;;
             closing)
-                _sync_file "$mod" "commands/closing.md" "$HOME/.claude/commands/closing.md"
+                _sync_file "$mod" "skills/closing/SKILL.md" "$HOME/.claude/skills/closing/SKILL.md"
                 ;;
             audit)
-                _sync_file "$mod" "commands/audit.md" "$HOME/.claude/commands/audit.md"
+                _sync_file "$mod" "skills/audit/SKILL.md" "$HOME/.claude/skills/audit/SKILL.md"
+                ;;
+            api-contract)
+                _sync_file "$mod" "skills/api-contract-init/SKILL.md" "$HOME/.claude/skills/api-contract-init/SKILL.md"
+                _sync_file "$mod" "skills/api-contract-sync/SKILL.md" "$HOME/.claude/skills/api-contract-sync/SKILL.md"
+                ;;
+            backlog-kit)
+                _sync_file "$mod" "skills/backlog-init/SKILL.md" "$HOME/.claude/skills/backlog-init/SKILL.md"
+                _sync_file "$mod" "skills/backlog-bug/SKILL.md" "$HOME/.claude/skills/backlog-bug/SKILL.md"
+                _sync_file "$mod" "skills/backlog-feat/SKILL.md" "$HOME/.claude/skills/backlog-feat/SKILL.md"
+                _sync_file "$mod" "skills/backlog-imp/SKILL.md" "$HOME/.claude/skills/backlog-imp/SKILL.md"
+                _sync_file "$mod" "skills/backlog-status/SKILL.md" "$HOME/.claude/skills/backlog-status/SKILL.md"
+                ;;
+            claude-md-kit)
+                _sync_file "$mod" "skills/claude-md-init/SKILL.md" "$HOME/.claude/skills/claude-md-init/SKILL.md"
+                _sync_file "$mod" "skills/claude-md-cleanup/SKILL.md" "$HOME/.claude/skills/claude-md-cleanup/SKILL.md"
+                _sync_file "$mod" "skills/claude-md-boost/SKILL.md" "$HOME/.claude/skills/claude-md-boost/SKILL.md"
+                ;;
+            explore)
+                _sync_file "$mod" "skills/explore/SKILL.md" "$HOME/.claude/skills/explore/SKILL.md"
+                ;;
+            factorize)
+                _sync_file "$mod" "skills/factorize/SKILL.md" "$HOME/.claude/skills/factorize/SKILL.md"
+                ;;
+            pre-commit-gate)
+                _sync_file "$mod" "skills/check/SKILL.md" "$HOME/.claude/skills/check/SKILL.md"
+                ;;
+            setup-project)
+                _sync_file "$mod" "skills/setup-project/SKILL.md" "$HOME/.claude/skills/setup-project/SKILL.md"
+                _sync_file "$mod" "skills/start/SKILL.md" "$HOME/.claude/skills/start/SKILL.md"
+                _sync_file "$mod" "skills/review/SKILL.md" "$HOME/.claude/skills/review/SKILL.md"
+                _sync_file "$mod" "skills/audit-conf/SKILL.md" "$HOME/.claude/skills/audit-conf/SKILL.md"
                 ;;
             command-guard)
                 _sync_file "$mod" "src/cli.ts" "$HOME/.claude/scripts/command-guard/src/cli.ts"
@@ -420,6 +451,7 @@ _sync_file() {
         echo -e "    ${DIM}local: ${local_path}${NC}"
 
         if [ "$FIX_MODE" = "1" ]; then
+            mkdir -p "$(dirname "$local_path")"
             cp "$repo_path" "$local_path"
             echo -e "    ${GREEN}→ Fixed (repo → local)${NC}"
         else

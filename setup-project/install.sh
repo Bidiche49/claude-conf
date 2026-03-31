@@ -1,6 +1,6 @@
 #!/bin/bash
 # ── setup-project — Install Script ──────────────────────────────
-# Installs the project bootstrap commands for Claude Code
+# Installs the project bootstrap skills for Claude Code
 #
 # Usage: bash install.sh
 
@@ -19,7 +19,7 @@ NC='\033[0m'
 # ── Paths ─────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-COMMANDS_DIR="$HOME/.claude/commands"
+SKILLS_DIR="$HOME/.claude/skills"
 HOOK_DIR="$HOME/.claude/hooks"
 SETTINGS_FILE="$HOME/.claude/settings.json"
 HOOK_COMMAND="$HOOK_DIR/auto-start.sh"
@@ -44,32 +44,32 @@ if ! command -v claude &>/dev/null; then
 fi
 echo -e "${GREEN}  ✓${NC} Claude Code available"
 
-# ── 2/3. Install commands ────────────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in setup-project start review audit-conf; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[2/3]${NC} Installing commands..."
+# ── 2/3. Install skills ──────────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[2/3]${NC} Installing skills..."
 
 installed_count=0
-for cmd in setup-project start review audit-conf; do
-    src="$SCRIPT_DIR/commands/${cmd}.md"
-    dst="$COMMANDS_DIR/${cmd}.md"
+for skill_name in setup-project start review audit-conf; do
+    src="$SCRIPT_DIR/skills/${skill_name}/SKILL.md"
+    dst="$SKILLS_DIR/${skill_name}/SKILL.md"
 
     if [ ! -f "$src" ]; then
-        echo -e "${RED}  ✗ Source not found: commands/${cmd}.md${NC}"
+        echo -e "${RED}  ✗ Source not found: skills/${skill_name}/SKILL.md${NC}"
         exit 1
     fi
 
-    if [ -f "$dst" ]; then
-        cp "$dst" "${dst}.bak"
-        echo -e "${YELLOW}  ↑${NC} Backed up existing ${cmd}.md"
-    fi
-
+    mkdir -p "$SKILLS_DIR/${skill_name}"
     cp "$src" "$dst"
     installed_count=$((installed_count + 1))
 done
 
-echo -e "${GREEN}  ✓${NC} $installed_count command(s) installed"
+echo -e "${GREEN}  ✓${NC} $installed_count skill(s) installed"
 
 # ── 3/3. Install auto-start hook ──────────────────────────────────
 
@@ -146,7 +146,7 @@ fi
 echo ""
 echo -e "${GREEN}  ── Installation complete ──${NC}"
 echo ""
-echo -e "  ${BOLD}Commands installed:${NC}"
+echo -e "  ${BOLD}Skills installed:${NC}"
 echo -e "    /setup-project  — bootstrap a project (stack detection, permissions, CLAUDE.md)"
 echo -e "    /start          — load session context (git, backlog, handoff)"
 echo -e "    /review         — auto-review changes before committing"

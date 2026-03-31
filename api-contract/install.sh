@@ -1,6 +1,6 @@
 #!/bin/bash
 # ── api-contract — Installer ────────────────────────────────────
-# Installs the api-contract hook and commands for Claude Code
+# Installs the api-contract hook and skills for Claude Code
 #
 # Usage: bash install.sh
 
@@ -21,7 +21,7 @@ NC='\033[0m'
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 HOOKS_DIR="$CLAUDE_DIR/hooks"
-COMMANDS_DIR="$CLAUDE_DIR/commands"
+SKILLS_DIR="$CLAUDE_DIR/skills"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 HOOK_FILE="$HOOKS_DIR/api-contract-reminder.sh"
 
@@ -72,25 +72,28 @@ cp "$SCRIPT_DIR/hooks/api-contract-reminder.sh" "$HOOK_FILE"
 chmod +x "$HOOK_FILE"
 echo -e "${GREEN}  ✓${NC} Hook installed in ${DIM}${HOOK_FILE}${NC}"
 
-# ── 3. Install commands ─────────────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in api-contract-init api-contract-sync; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[3/4]${NC} Installing commands..."
+# ── 3. Install skills ──────────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[3/4]${NC} Installing skills..."
 
-for cmd_file in api-contract-init.md api-contract-sync.md; do
-    if [ ! -f "$SCRIPT_DIR/commands/$cmd_file" ]; then
-        echo -e "${RED}  ✗ Source file not found: commands/$cmd_file${NC}"
+for skill_name in api-contract-init api-contract-sync; do
+    src="$SCRIPT_DIR/skills/$skill_name/SKILL.md"
+    dst="$SKILLS_DIR/$skill_name/SKILL.md"
+
+    if [ ! -f "$src" ]; then
+        echo -e "${RED}  ✗ Source file not found: skills/$skill_name/SKILL.md${NC}"
         exit 1
     fi
 
-    if [ -f "$COMMANDS_DIR/$cmd_file" ]; then
-        cp "$COMMANDS_DIR/$cmd_file" "$COMMANDS_DIR/$cmd_file.backup.$(date +%Y%m%d%H%M%S)"
-        echo -e "${YELLOW}  !${NC} Existing $cmd_file backed up"
-    fi
-
-    cp "$SCRIPT_DIR/commands/$cmd_file" "$COMMANDS_DIR/$cmd_file"
-    echo -e "${GREEN}  ✓${NC} /${cmd_file%.md} installed"
+    mkdir -p "$SKILLS_DIR/$skill_name"
+    cp "$src" "$dst"
+    echo -e "${GREEN}  ✓${NC} /$skill_name skill installed"
 done
 
 # ── 4. Configure settings.json ──────────────────────────────────
@@ -160,7 +163,7 @@ echo -e "  ${BOLD}What it does:${NC}"
 echo -e "    ${DIM}When Claude edits a controller, route, or DTO file, the hook reminds${NC}"
 echo -e "    ${DIM}you to update API_CONTRACT.md and its Changelog.${NC}"
 echo ""
-echo -e "  ${BOLD}Commands:${NC}"
+echo -e "  ${BOLD}Skills:${NC}"
 echo -e "    ${BOLD}/api-contract-init${NC}  — Generate API_CONTRACT.md from existing code"
 echo -e "    ${BOLD}/api-contract-sync${NC}  — Check contract vs code for drift"
 echo ""

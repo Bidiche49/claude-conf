@@ -23,7 +23,7 @@ CLAUDE_DIR="$HOME/.claude"
 CLAUDE_MD="$CLAUDE_DIR/CLAUDE.md"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 HOOKS_DIR="$CLAUDE_DIR/hooks"
-COMMANDS_DIR="$CLAUDE_DIR/commands"
+SKILLS_DIR="$CLAUDE_DIR/skills"
 TEMPLATES_DIR="$CLAUDE_DIR/templates/backlog"
 SNIPPET_FILE="$SCRIPT_DIR/claude-md/backlog.md"
 HOOK_FILE="$SCRIPT_DIR/hooks/backlog-guard.sh"
@@ -137,24 +137,30 @@ else
     echo -e "${GREEN}  ✓${NC} Created ${DIM}${SETTINGS_FILE}${NC}"
 fi
 
-# ── 3/5. Install commands ────────────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in backlog-init backlog-bug backlog-feat backlog-imp backlog-status; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[3/5]${NC} Installing commands..."
+# ── 3/5. Install skills ──────────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[3/5]${NC} Installing skills..."
 
 installed_count=0
-for cmd in backlog-init backlog-bug backlog-feat backlog-imp backlog-status; do
-    if [ -f "$SCRIPT_DIR/commands/${cmd}.md" ]; then
-        cp "$SCRIPT_DIR/commands/${cmd}.md" "$COMMANDS_DIR/${cmd}.md"
+for skill_name in backlog-init backlog-bug backlog-feat backlog-imp backlog-status; do
+    src="$SCRIPT_DIR/skills/$skill_name/SKILL.md"
+    if [ -f "$src" ]; then
+        mkdir -p "$SKILLS_DIR/$skill_name"
+        cp "$src" "$SKILLS_DIR/$skill_name/SKILL.md"
         installed_count=$((installed_count + 1))
     fi
 done
 
 if [ "$installed_count" -gt 0 ]; then
-    echo -e "${GREEN}  ✓${NC} $installed_count command(s) installed"
+    echo -e "${GREEN}  ✓${NC} $installed_count skill(s) installed"
 else
-    echo -e "${YELLOW}  !${NC} No command files found yet (will be installed later)"
+    echo -e "${YELLOW}  !${NC} No skill files found yet (will be installed later)"
 fi
 
 # ── 4/5. Install template ────────────────────────────────────────
@@ -231,7 +237,7 @@ echo -e "    • backlog-guard hook (PreToolUse Write) — blocks duplicate IDs"
 echo -e "    • Ticket template in ~/.claude/templates/backlog/"
 echo -e "    • Backlog conventions injected into ~/.claude/CLAUDE.md"
 if [ "$installed_count" -gt 0 ]; then
-echo -e "    • $installed_count slash commands (/backlog-init, /backlog-bug, etc.)"
+echo -e "    • $installed_count skills (/backlog-init, /backlog-bug, etc.)"
 fi
 echo ""
 echo -e "  ${BOLD}Works best with:${NC}"

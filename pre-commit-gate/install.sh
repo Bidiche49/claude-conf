@@ -1,6 +1,6 @@
 #!/bin/bash
 # ── pre-commit-gate — Installer ─────────────────────────────────
-# Installs the pre-commit-gate hook and /check command for Claude Code
+# Installs the pre-commit-gate hook and /check skill for Claude Code
 #
 # Usage: bash install.sh
 
@@ -21,7 +21,7 @@ NC='\033[0m'
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 HOOKS_DIR="$CLAUDE_DIR/hooks"
-COMMANDS_DIR="$CLAUDE_DIR/commands"
+SKILLS_DIR="$CLAUDE_DIR/skills"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 HOOK_COMMAND="$HOOKS_DIR/pre-commit-gate.sh"
 
@@ -72,24 +72,27 @@ cp "$SCRIPT_DIR/hooks/pre-commit-gate.sh" "$HOOK_COMMAND"
 chmod +x "$HOOK_COMMAND"
 echo -e "${GREEN}  ✓${NC} Hook installed in ${DIM}${HOOK_COMMAND}${NC}"
 
-# ── 3. Install /check command ───────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in check; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[3/4]${NC} Installing /check command..."
+# ── 3. Install /check skill ─────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[3/4]${NC} Installing /check skill..."
 
-if [ ! -f "$SCRIPT_DIR/commands/check.md" ]; then
-    echo -e "${RED}  ✗ Source file not found: commands/check.md${NC}"
+src="$SCRIPT_DIR/skills/check/SKILL.md"
+dst="$SKILLS_DIR/check/SKILL.md"
+
+if [ ! -f "$src" ]; then
+    echo -e "${RED}  ✗ Source file not found: skills/check/SKILL.md${NC}"
     exit 1
 fi
 
-if [ -f "$COMMANDS_DIR/check.md" ]; then
-    cp "$COMMANDS_DIR/check.md" "$COMMANDS_DIR/check.md.backup.$(date +%Y%m%d%H%M%S)"
-    echo -e "${YELLOW}  !${NC} Existing command backed up"
-fi
-
-cp "$SCRIPT_DIR/commands/check.md" "$COMMANDS_DIR/check.md"
-echo -e "${GREEN}  ✓${NC} Command installed in ${DIM}${COMMANDS_DIR}/check.md${NC}"
+mkdir -p "$SKILLS_DIR/check"
+cp "$src" "$dst"
+echo -e "${GREEN}  ✓${NC} Skill installed in ${DIM}${SKILLS_DIR}/check/SKILL.md${NC}"
 
 # ── 4. Configure settings.json ──────────────────────────────────
 

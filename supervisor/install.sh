@@ -1,6 +1,6 @@
 #!/bin/bash
 # ── Claude Code Supervisor — Install Script ──────────────────────
-# Installs the /supervisor slash command for Claude Code
+# Installs the /supervisor skill for Claude Code
 #
 # Usage: bash install.sh
 
@@ -15,7 +15,7 @@ DIM='\033[2m'
 NC='\033[0m'
 
 CLAUDE_DIR="$HOME/.claude"
-COMMANDS_DIR="$CLAUDE_DIR/commands"
+SKILLS_DIR="$CLAUDE_DIR/skills"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo ""
@@ -37,26 +37,28 @@ fi
 
 echo -e "${GREEN}  ✓${NC} Claude Code available"
 
-# ── 2. Install the command ────────────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in supervisor; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[2/2]${NC} Installing /supervisor command..."
+# ── 2. Install the skill ──────────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[2/2]${NC} Installing /supervisor skill..."
 
-if [ ! -f "$SCRIPT_DIR/commands/supervisor.md" ]; then
-    echo -e "${RED}  ✗ Source file not found: commands/supervisor.md${NC}"
+src="$SCRIPT_DIR/skills/supervisor/SKILL.md"
+dst="$SKILLS_DIR/supervisor/SKILL.md"
+
+if [ ! -f "$src" ]; then
+    echo -e "${RED}  ✗ Source file not found: skills/supervisor/SKILL.md${NC}"
     exit 1
 fi
 
-# Backup existing command if present
-if [ -f "$COMMANDS_DIR/supervisor.md" ]; then
-    cp "$COMMANDS_DIR/supervisor.md" "$COMMANDS_DIR/supervisor.md.backup.$(date +%Y%m%d%H%M%S)"
-    echo -e "${YELLOW}  !${NC} Existing command backed up"
-fi
+mkdir -p "$SKILLS_DIR/supervisor"
+cp "$src" "$dst"
 
-cp "$SCRIPT_DIR/commands/supervisor.md" "$COMMANDS_DIR/supervisor.md"
-
-echo -e "${GREEN}  ✓${NC} Command installed in $COMMANDS_DIR/supervisor.md"
+echo -e "${GREEN}  ✓${NC} Skill installed in $SKILLS_DIR/supervisor/SKILL.md"
 
 # ── Done ──────────────────────────────────────────────────────────
 
@@ -75,5 +77,5 @@ echo -e "  ${BOLD}Works best with:${NC}"
 echo -e "    ${DIM}tab-titles${NC}  — distinct tab titles for supervisor vs worker sessions"
 echo -e "    ${DIM}handoff-kit${NC} — context monitoring to avoid losing progress"
 echo ""
-echo -e "  ${DIM}Restart Claude Code for the command to become available.${NC}"
+echo -e "  ${DIM}Restart Claude Code for the skill to become available.${NC}"
 echo ""

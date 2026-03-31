@@ -29,7 +29,7 @@ fi
 
 echo "[1/6] Creation des dossiers..."
 mkdir -p "$CLAUDE_DIR/hooks"
-mkdir -p "$CLAUDE_DIR/commands"
+mkdir -p "$CLAUDE_DIR/skills/handoff"
 mkdir -p "$CLAUDE_DIR/scripts"
 mkdir -p "$CLAUDE_DIR/context-data"
 mkdir -p "$CLAUDE_DIR/handoff-system/sessions"
@@ -41,8 +41,14 @@ cp "$SCRIPT_DIR/hooks/pre-compact-handoff.sh" "$CLAUDE_DIR/hooks/pre-compact-han
 chmod +x "$CLAUDE_DIR/hooks/context-monitor.sh"
 chmod +x "$CLAUDE_DIR/hooks/pre-compact-handoff.sh"
 
-echo "[3/6] Installation de la commande /handoff..."
-cp "$SCRIPT_DIR/commands/handoff.md" "$CLAUDE_DIR/commands/handoff.md"
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in handoff; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
+
+echo "[3/6] Installation du skill /handoff..."
+cp "$SCRIPT_DIR/skills/handoff/SKILL.md" "$CLAUDE_DIR/skills/handoff/SKILL.md"
 
 echo "[4/6] Installation de la statusline..."
 if [ -d "$CLAUDE_DIR/scripts/statusline" ]; then
@@ -115,7 +121,7 @@ echo "============================================"
 echo ""
 echo "Ce qui a ete installe :"
 echo "  - Hooks : context-monitor.sh + pre-compact-handoff.sh"
-echo "  - Commande : /handoff"
+echo "  - Skill : /handoff"
 echo "  - Statusline : affichage contexte % en temps reel"
 echo "  - Settings.json : hooks et statusline configures"
 echo ""

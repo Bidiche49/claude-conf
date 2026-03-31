@@ -1,6 +1,6 @@
 #!/bin/bash
 # ── audit — Install Script ─────────────────────────────────────
-# Installs the /audit command for Claude Code
+# Installs the /audit skill for Claude Code
 #
 # Usage: bash install.sh
 
@@ -19,7 +19,7 @@ NC='\033[0m'
 # ── Paths ─────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-COMMANDS_DIR="$HOME/.claude/commands"
+SKILLS_DIR="$HOME/.claude/skills"
 
 # ── Banner ────────────────────────────────────────────────────────
 
@@ -42,34 +42,34 @@ if ! command -v claude &>/dev/null; then
 fi
 echo -e "${GREEN}  ✓${NC} Claude Code available"
 
-# ── 2/2. Install command ─────────────────────────────────────────
+# ── Cleanup legacy commands ─────────────────────────────────────
+LEGACY_DIR="$HOME/.claude/commands"
+for legacy in audit; do
+    rm -f "$LEGACY_DIR/$legacy.md" "$LEGACY_DIR/$legacy.md".backup.*
+done
 
-echo -e "${BLUE}[2/2]${NC} Installing command..."
+# ── 2/2. Install skill ───────────────────────────────────────────
 
-mkdir -p "$COMMANDS_DIR"
+echo -e "${BLUE}[2/2]${NC} Installing skill..."
 
-src="$SCRIPT_DIR/commands/audit.md"
-dst="$COMMANDS_DIR/audit.md"
+src="$SCRIPT_DIR/skills/audit/SKILL.md"
+dst="$SKILLS_DIR/audit/SKILL.md"
 
 if [ ! -f "$src" ]; then
-    echo -e "${RED}  ✗ Source not found: commands/audit.md${NC}"
+    echo -e "${RED}  ✗ Source not found: skills/audit/SKILL.md${NC}"
     exit 1
 fi
 
-if [ -f "$dst" ]; then
-    cp "$dst" "${dst}.bak"
-    echo -e "${YELLOW}  ↑${NC} Backed up existing audit.md"
-fi
-
+mkdir -p "$SKILLS_DIR/audit"
 cp "$src" "$dst"
-echo -e "${GREEN}  ✓${NC} /audit command installed"
+echo -e "${GREEN}  ✓${NC} /audit skill installed"
 
 # ── Done ──────────────────────────────────────────────────────────
 
 echo ""
 echo -e "${GREEN}  ── Installation complete ──${NC}"
 echo ""
-echo -e "  ${BOLD}Command installed:${NC}"
+echo -e "  ${BOLD}Skill installed:${NC}"
 echo -e "    /audit              — full code audit (all relevant axes)"
 echo -e "    /audit security     — focused security audit"
 echo -e "    /audit tests        — focused test coverage audit"
