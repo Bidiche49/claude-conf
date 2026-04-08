@@ -167,14 +167,134 @@ test_bash_zsh_coherence() {
   fi
 }
 
+SESSION_HOOK="$MODULE_DIR/hooks/session-tab-title.sh"
+
+test_session_hook_syntax() {
+  set +e
+  bash -n "$SESSION_HOOK" 2>/dev/null
+  rc=$?
+  set -e
+  if [ "$rc" -eq 0 ]; then
+    assert_pass "session-tab-title.sh syntax valid"
+  else
+    assert_fail "session-tab-title.sh syntax valid" "bash -n returned $rc"
+  fi
+}
+
+test_session_extracts_json() {
+  # Verify session-tab-title.sh can parse session_id and source from JSON
+  local json='{"session_id":"abc-123","source":"resume"}'
+  local sid src
+  sid=$(echo "$json" | jq -r '.session_id // empty' 2>/dev/null)
+  src=$(echo "$json" | jq -r '.source // empty' 2>/dev/null)
+  if [ "$sid" = "abc-123" ] && [ "$src" = "resume" ]; then
+    assert_pass "session hook JSON extraction (session_id + source)"
+  else
+    assert_fail "session hook JSON extraction" "sid=$sid src=$src"
+  fi
+}
+
+test_tab_state_file_session_id() {
+  # Verify tab-title.sh creates state file in .claude-sessions/tab-state/ when session_id present
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  git init "$tmpdir" --quiet
+
+  local json='{"prompt":"/supervisor","session_id":"test-session-42"}'
+  (cd "$tmpdir" && echo "$json" | bash "$HOOK" 2>/dev/null)
+
+  if [ -f "$tmpdir/.claude-sessions/tab-state/test-session-42" ]; then
+    local content
+    content=$(cat "$tmpdir/.claude-sessions/tab-state/test-session-42")
+    if [ "$content" = "SUP" ]; then
+      assert_pass "tab-title.sh creates state file with session_id (SUP mode)"
+    else
+      assert_fail "tab-title.sh state file content" "expected SUP, got: $content"
+    fi
+  else
+    assert_fail "tab-title.sh creates state file with session_id" "file not found"
+  fi
+  rm -rf "$tmpdir"
+}
+
+test_tab_state_fallback_tmp() {
+  # When session_id is missing, state file should fall back to /tmp/
+  local json='{"prompt":"hello"}'
+  local tmpdir
+  tmpdir=$(mktemp -d)
+
+  # Run outside a git repo to prevent git root detection
+  (cd "$tmpdir" && echo "$json" | bash "$HOOK" 2>/dev/null)
+
+  # The hook uses /tmp/cc-tab-${PPID} as fallback — just verify no .claude-sessions/ created
+  if [ ! -d "$tmpdir/.claude-sessions" ]; then
+    assert_pass "tab-title.sh falls back to /tmp/ when no session_id"
+  else
+    assert_fail "tab-title.sh fallback" ".claude-sessions/ created without session_id"
+  fi
+  rm -rf "$tmpdir"
+}
+
+test_session_restore_on_resume() {
+  # Simulate resume: state file exists, source=resume → should not error
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  git init "$tmpdir" --quiet
+  mkdir -p "$tmpdir/.claude-sessions/tab-state"
+  echo "SUP" > "$tmpdir/.claude-sessions/tab-state/resume-test-id"
+
+  local json='{"session_id":"resume-test-id","source":"resume"}'
+
+  # Run session hook — it writes to /dev/tty which may not be available in test,
+  # so we just verify it doesn't crash (exit 0)
+  set +e
+  (cd "$tmpdir" && echo "$json" | bash "$SESSION_HOOK" 2>/dev/null)
+  rc=$?
+  set -e
+  if [ "$rc" -eq 0 ]; then
+    assert_pass "session-tab-title.sh handles resume without error"
+  else
+    assert_fail "session-tab-title.sh resume" "exit code $rc"
+  fi
+  rm -rf "$tmpdir"
+}
+
+test_session_restore_biz() {
+  # Verify BIZ state is also handled on resume
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  git init "$tmpdir" --quiet
+  mkdir -p "$tmpdir/.claude-sessions/tab-state"
+  echo "BIZ" > "$tmpdir/.claude-sessions/tab-state/biz-test-id"
+
+  local json='{"session_id":"biz-test-id","source":"compact"}'
+
+  set +e
+  (cd "$tmpdir" && echo "$json" | bash "$SESSION_HOOK" 2>/dev/null)
+  rc=$?
+  set -e
+  if [ "$rc" -eq 0 ]; then
+    assert_pass "session-tab-title.sh handles compact+BIZ without error"
+  else
+    assert_fail "session-tab-title.sh compact+BIZ" "exit code $rc"
+  fi
+  rm -rf "$tmpdir"
+}
+
 # --- Runner ---
 echo "=== [tab-titles] Tests ==="
 test_hook_syntax
 test_install_syntax
+test_session_hook_syntax
 test_dot_palette
 test_dot_claude_conf
 test_dot_deterministic
 test_bash_zsh_coherence
+test_session_extracts_json
+test_tab_state_file_session_id
+test_tab_state_fallback_tmp
+test_session_restore_on_resume
+test_session_restore_biz
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1

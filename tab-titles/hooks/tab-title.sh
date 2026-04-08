@@ -31,12 +31,31 @@ _dot() {
 
 DOT=$(_dot "$PROJECT")
 
-# Fichier d'etat par session Claude Code (PPID = PID de claude)
-STATE_FILE="/tmp/cc-tab-${PPID}"
+# Extraire session_id du JSON (stable across resume)
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null)
+
+# Fichier d'etat par session — preferer .claude-sessions/ (persiste au resume)
+PROJECT_ROOT=$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null)
+if [ -n "$SESSION_ID" ] && [ -n "$PROJECT_ROOT" ]; then
+    STATE_DIR="${PROJECT_ROOT}/.claude-sessions/tab-state"
+    mkdir -p "$STATE_DIR"
+    STATE_FILE="${STATE_DIR}/${SESSION_ID}"
+else
+    STATE_FILE="/tmp/cc-tab-${PPID}"
+fi
 
 # --- Detection de changement de mode (PRIORITE : supervisor > ticket) ---
 
-CURRENT_STATE=$(cat "$STATE_FILE" 2>/dev/null || echo "CC")
+# Read current state — with fallback from old /tmp/ state for migration
+if [ -f "$STATE_FILE" ]; then
+    CURRENT_STATE=$(cat "$STATE_FILE")
+elif [ -f "/tmp/cc-tab-${PPID}" ] && [ "$STATE_FILE" != "/tmp/cc-tab-${PPID}" ]; then
+    CURRENT_STATE=$(cat "/tmp/cc-tab-${PPID}")
+    # Migrate to new location
+    cp "/tmp/cc-tab-${PPID}" "$STATE_FILE"
+else
+    CURRENT_STATE="CC"
+fi
 
 if echo "$PROMPT" | head -1 | grep -qiE '^[[:space:]]*/supervisor'; then
     echo "SUP" > "$STATE_FILE"
