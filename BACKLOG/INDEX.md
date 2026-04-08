@@ -34,8 +34,9 @@
 | BUG-009 | tab-titles — precmd() ecrase les precmd existants (oh-my-zsh, p10k) | Fait | Moyenne |
 | BUG-010 | tab-titles — titre ecrase au demarrage de Claude Code | Fait | Haute |
 | BUG-011 | supervisor-guard — activation fragile, depend d'un touch dans le prompt | Fait | Haute |
+| BUG-012 | Tab-titles — titre d'onglet revient a "CC" au resume de conversation | Fait | Haute |
 
-**Prochain ID : BUG-012**
+**Prochain ID : BUG-013**
 
 ## IMPROVEMENTS
 
@@ -71,5 +72,6 @@
 | IMP-028 | tab-titles — ajouter tests pour session-tab-title.sh (SessionStart hook) | A faire | Basse |
 | IMP-029 | supervisor-guard — bloquer les ecritures source via Bash (redirections, tee, sed -i) | Fait | Moyenne |
 | IMP-030 | supervisor-guard.sh — ajouter set -e (convention projet) | A faire | Basse |
+| IMP-031 | tab-titles hooks — ajouter set -e (convention projet) | A faire | Basse |
 
-**Prochain ID : IMP-031**
+**Prochain ID : IMP-032**
