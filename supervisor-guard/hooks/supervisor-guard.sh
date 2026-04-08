@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # ── supervisor-guard — PreToolUse hook ────────────────────────────
 # Blocks Write/Edit/Bash-write operations on files outside the supervisor
 # whitelist when supervisor mode is active (marker file exists).
@@ -23,7 +24,7 @@ grep -q "^supervisor-guard$" "$HOME/.claude-conf-disabled" 2>/dev/null && exit 0
 INPUT=$(cat)
 
 # Extract tool_name — enforce on Write, Edit, and Bash
-TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
+TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null) || true
 
 case "$TOOL_NAME" in
     Write|Edit|Bash) ;;
@@ -31,7 +32,7 @@ case "$TOOL_NAME" in
 esac
 
 # Extract session_id — no session = pass-through
-SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null)
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null) || true
 [ -z "$SESSION_ID" ] && exit 0
 
 # Check supervisor marker — primary mechanism (set by supervisor-detect.sh hook)
@@ -65,7 +66,7 @@ BLOCKEOF
 case "$TOOL_NAME" in
     Write|Edit)
         # Extract target file path from tool_input
-        FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null)
+        FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null) || true
         [ -z "$FILE_PATH" ] && exit 0
 
         # Normalize: strip leading ./ if present
@@ -79,7 +80,7 @@ case "$TOOL_NAME" in
 
     Bash)
         # Extract the command string
-        COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
+        COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || true
         [ -z "$COMMAND" ] && exit 0
 
         BLOCKED_TARGET=""
