@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Hook UserPromptSubmit — Met a jour le titre d'onglet + fenetre Terminal.app
 # Detecte le mode (supervisor/worker/normal) et le projet courant
 #
@@ -16,7 +17,7 @@ grep -q "^tab-titles$" "$HOME/.claude-conf-disabled" 2>/dev/null && exit 0
 INPUT=$(cat)
 
 # Extraire le prompt (jq disponible - utilise par context-monitor.sh)
-PROMPT=$(echo "$INPUT" | jq -r '.prompt // empty' 2>/dev/null)
+PROMPT=$(echo "$INPUT" | jq -r '.prompt // empty' 2>/dev/null || true)
 
 # Nom du projet
 PROJECT=$(basename "$PWD")
@@ -32,10 +33,10 @@ _dot() {
 DOT=$(_dot "$PROJECT")
 
 # Extraire session_id du JSON (stable across resume)
-SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null)
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
 
 # Fichier d'etat par session — preferer .claude-sessions/ (persiste au resume)
-PROJECT_ROOT=$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null)
+PROJECT_ROOT=$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null || true)
 if [ -n "$SESSION_ID" ] && [ -n "$PROJECT_ROOT" ]; then
     STATE_DIR="${PROJECT_ROOT}/.claude-sessions/tab-state"
     mkdir -p "$STATE_DIR"
@@ -67,7 +68,7 @@ elif [ -n "$PROMPT" ]; then
     echo "$PROMPT" | grep -qE '(ABSOLUTE WORKER RULES|STRICT SCOPE)' && IS_WORKER_PROMPT=true
 
     # Ticket in first 3 lines = user intent (typed or worker prompt header)
-    TICKET_MATCH=$(echo "$PROMPT" | head -3 | grep -oE '(BUG|FEAT|IMP)-[0-9]+' | head -1)
+    TICKET_MATCH=$(echo "$PROMPT" | head -3 | grep -oE '(BUG|FEAT|IMP)-[0-9]+' | head -1 || true)
 
     if [ "$CURRENT_STATE" = "SUP" ] || [ "$CURRENT_STATE" = "BIZ" ]; then
         # SUP and BIZ are sticky — only a real worker prompt can override them
@@ -121,7 +122,7 @@ case "$STATE" in
 esac
 
 # --- Appliquer le titre (OSC 1 = tab, OSC 2 = window) ---
-printf "\033]1;%s\007" "$TAB_TITLE" > /dev/tty 2>/dev/null
-printf "\033]2;%s %s\007" "$DOT" "$PROJECT" > /dev/tty 2>/dev/null
+printf "\033]1;%s\007" "$TAB_TITLE" > /dev/tty 2>/dev/null || true
+printf "\033]2;%s %s\007" "$DOT" "$PROJECT" > /dev/tty 2>/dev/null || true
 
 exit 0

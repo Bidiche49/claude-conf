@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Hook SessionStart — Re-applies tab/window title after Claude Code startup
 # On resume/compact: reads persisted state file to restore the correct title
 # On startup: uses CC_TAB_TITLE/CC_WIN_TITLE env vars from launcher functions
@@ -9,8 +10,8 @@ grep -q "^tab-titles$" "$HOME/.claude-conf-disabled" 2>/dev/null && exit 0
 # Read JSON stdin
 INPUT=$(cat)
 
-SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null)
-SOURCE=$(echo "$INPUT" | jq -r '.source // empty' 2>/dev/null)
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
+SOURCE=$(echo "$INPUT" | jq -r '.source // empty' 2>/dev/null || true)
 
 # Couleur unique par projet (hash du nom) — same logic as tab-title.sh
 _dot() {
@@ -22,7 +23,7 @@ _dot() {
 
 if [ "$SOURCE" = "resume" ] || [ "$SOURCE" = "compact" ]; then
     # Restore title from persisted state file
-    PROJECT_ROOT=$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null)
+    PROJECT_ROOT=$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null || true)
     PROJECT=$(basename "$PWD")
     DOT=$(_dot "$PROJECT")
 
@@ -56,8 +57,8 @@ if [ "$SOURCE" = "resume" ] || [ "$SOURCE" = "compact" ]; then
                 ;;
         esac
 
-        printf "\033]1;%s\007" "$TAB_TITLE" > /dev/tty 2>/dev/null
-        printf "\033]2;%s %s\007" "$DOT" "$PROJECT" > /dev/tty 2>/dev/null
+        printf "\033]1;%s\007" "$TAB_TITLE" > /dev/tty 2>/dev/null || true
+        printf "\033]2;%s %s\007" "$DOT" "$PROJECT" > /dev/tty 2>/dev/null || true
 
         # Prevent Claude Code from overwriting the restored title
         if [ -n "$CLAUDE_ENV_FILE" ]; then
@@ -67,11 +68,11 @@ if [ "$SOURCE" = "resume" ] || [ "$SOURCE" = "compact" ]; then
 else
     # Startup — re-apply titles from env vars (set by cc/ccd/ccs/ccw functions)
     if [ -n "$CC_TAB_TITLE" ]; then
-        printf "\033]1;%s\007" "$CC_TAB_TITLE" > /dev/tty 2>/dev/null
+        printf "\033]1;%s\007" "$CC_TAB_TITLE" > /dev/tty 2>/dev/null || true
     fi
 
     if [ -n "$CC_WIN_TITLE" ]; then
-        printf "\033]2;%s\007" "$CC_WIN_TITLE" > /dev/tty 2>/dev/null
+        printf "\033]2;%s\007" "$CC_WIN_TITLE" > /dev/tty 2>/dev/null || true
     fi
 fi
 
