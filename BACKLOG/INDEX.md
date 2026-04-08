@@ -72,6 +72,6 @@
 | IMP-028 | tab-titles — ajouter tests pour session-tab-title.sh (SessionStart hook) | A faire | Basse |
 | IMP-029 | supervisor-guard — bloquer les ecritures source via Bash (redirections, tee, sed -i) | Fait | Moyenne |
 | IMP-030 | supervisor-guard.sh — ajouter set -e (convention projet) | A faire | Basse |
-| IMP-031 | tab-titles hooks — ajouter set -e (convention projet) | A faire | Basse |
+| IMP-031 | tab-titles hooks — ajouter set -e (convention projet) | Fait | Basse |
 
 **Prochain ID : IMP-032**
