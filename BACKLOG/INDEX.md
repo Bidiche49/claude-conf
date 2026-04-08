@@ -71,7 +71,7 @@
 | IMP-027 | install.sh — ajouter les 4 modules manquants au MODULES array | Fait | Haute |
 | IMP-028 | tab-titles — ajouter tests pour session-tab-title.sh (SessionStart hook) | Fait | Basse |
 | IMP-029 | supervisor-guard — bloquer les ecritures source via Bash (redirections, tee, sed -i) | Fait | Moyenne |
-| IMP-030 | supervisor-guard.sh — ajouter set -e (convention projet) | A faire | Basse |
+| IMP-030 | supervisor-guard.sh — ajouter set -e (convention projet) | Fait | Basse |
 | IMP-031 | tab-titles hooks — ajouter set -e (convention projet) | Fait | Basse |
 
 **Prochain ID : IMP-032**
