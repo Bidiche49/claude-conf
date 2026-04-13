@@ -31,12 +31,13 @@ show_banner() {
 
 # ── Module definitions ────────────────────────────────────────────
 
-MODULES=("tab-titles" "handoff-kit" "supervisor" "closing" "command-guard" "critical-thinking" "pre-commit-gate" "backlog-kit" "claude-md-kit" "setup-project" "api-contract" "scope-enforcer" "post-tool-use" "audit" "factorize")
+MODULES=("tab-titles" "handoff-kit" "supervisor" "closing" "comptable" "command-guard" "critical-thinking" "pre-commit-gate" "backlog-kit" "claude-md-kit" "setup-project" "api-contract" "scope-enforcer" "post-tool-use" "audit" "factorize")
 DESCRIPTIONS=(
     "Smart terminal tab titles for Claude Code sessions"
     "Context monitoring, automatic backups, and session handoff"
     "CTO mode — investigate, delegate to workers, validate, never write code"
     "Freelance closing — mission analysis, scoping, quoting, CDC protection"
+    "Expert-comptable / fiscaliste — optimisation FR, expatriation, patrimoine"
     "PreToolUse hook that validates every shell command before execution"
     "Anti-complacency rules — sparring partner mode for Claude Code"
     "Reminder to run /check before committing — with universal stack detection"
@@ -52,6 +53,7 @@ DESCRIPTIONS=(
 DEPS=(
     "jq"
     "bun, jq"
+    "none"
     "none"
     "none"
     "bun, jq"

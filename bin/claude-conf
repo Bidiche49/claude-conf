@@ -362,6 +362,9 @@ cmd_sync() {
             closing)
                 _sync_file "$mod" "skills/closing/SKILL.md" "$HOME/.claude/skills/closing/SKILL.md"
                 ;;
+            comptable)
+                _sync_file "$mod" "skills/comptable/SKILL.md" "$HOME/.claude/skills/comptable/SKILL.md"
+                ;;
             audit)
                 _sync_file "$mod" "skills/audit/SKILL.md" "$HOME/.claude/skills/audit/SKILL.md"
                 ;;
