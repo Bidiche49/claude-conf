@@ -85,14 +85,60 @@ Numbers above assume:
 
 If your project is smaller, or you mostly do focused single-file edits, the index won't hurt but won't pay for itself either. CLAUDE.md hierarchical + Glob/Grep stays optimal in that regime.
 
+## TypeScript / Next.js — first empirical measure (2026-05-01)
+
+First real-world run of the `/code-index-bootstrap` skill on a non-Dart project. Site vitrine Next.js / TypeScript.
+
+| Metric | Value |
+|---|---|
+| Source files (`.ts` + `.tsx`, excluding tests) | 53 |
+| Sub-directories indexed | 22 |
+| Generation time (cold) | ~150 ms |
+| Parser used | `typescript` (TS Compiler API, native — already in devDeps) |
+| Indexer location | `tools/code_index.mjs` (ESM, 0 new dependency) |
+
+**Notable decision by the skill** (independent from the prompt): chose `typescript` (the TypeScript Compiler API directly) instead of `ts-morph`. Reasoning given: ts-morph is a wrapper, the underlying API is already installed in devDeps, no need to add 9 MB. **Pragmatic and right — kept as a pattern for future native stacks (use the lightest available official parser).**
+
+### Token economy on this TS codebase
+
+| Sub-directory | Source bytes | Code-map bytes | Saving |
+|---|---:|---:|---:|
+| `src/components/ui/` (13 files, 1192 lines) | 37 644 | 5 226 | **−86.1%** |
+| `src/lib/` | 591 814 | 8 624 | **−98.5%** |
+
+Both significantly above the ≥ 50% guardrail threshold.
+
+### Skill validation walk-through
+
+| Phase | Result |
+|---|---|
+| **V1** — format conformance | ✅ first pass (title, How-to-use block, `<kind> <name> path:line` format, declaration sections, valid markdown, ≥ 3 declaration kinds) |
+| **V2** — sample symbol verification (5 randomly-picked declarations) | ✅ 5/5 line numbers exact (off=0). The official TS Compiler API reports precise lines. |
+| **V3** — token economy | ✅ first pass (86% + 98%) |
+| **V4** — refinement loop | Triggered for a cosmetic defect: multi-line signatures on functions with destructured parameters (e.g. `BeforeAfterSlider({\n  beforeSlug,\n  ...\n})`). Auto-detected post-V3, fixed with a `compactWs()` helper applied to param names + types. Re-validation confirmed no regression on V1/V2/V3. |
+
+The defect was non-blocking (V3 passed before fix) but degraded readability. The skill did the right thing: pass the gate first, then improve in a quick-fix without lowering any standard.
+
+### Caveat — single-project sample
+
+These numbers come from one TS project (a relatively standard Next.js site vitrine). They do **not** generalize automatically to:
+- NestJS / Angular projects (decorators not captured as metadata)
+- Monorepos (single-source-dir walk insufficient)
+- React Native (untested)
+- Vue / Svelte / Solid (`.vue` / `.svelte` files not parsed by the TS Compiler API — would need a dedicated parser)
+
+The skill remains the recommended entry-point for non-Dart stacks until at least 3-5 representative TS projects are indexed and the patterns generalize cleanly. **Native v0.2 status for TS is not premature-shipped on a sample of one.**
+
 ## Future benchmarks (multi-stack)
 
 The `/code-index-bootstrap` skill (shipped) covers TS/Python/Go/Rust by generating a stack-equivalent indexer on first run, with **≥ 50% token reduction enforced** as a hard validation gate (Guardrail 4 in `skills/code-index-bootstrap/SKILL.md`).
 
-This section will collect measurements as the skill is exercised on real projects:
-- A TypeScript/React project (`ts-morph`)
-- A Python/FastAPI project (`ast`)
-- A Go module (`go/parser`)
-- A Rust crate (`syn`)
+Status of each stack:
+- ✅ **TypeScript/Next.js** — measured 2026-05-01, see section above
+- ⏳ **Python/FastAPI** (`ast` stdlib) — pending
+- ⏳ **Go module** (`go/parser` stdlib) — pending
+- ⏳ **Rust crate** (`syn` crate) — pending
 
 For each, the reference is *not* "match Dart numbers" but "achieve ≥ 50% token reduction on a representative navigation scenario" — the auto-validation gate built into the bootstrap skill. If a generated indexer cannot pass that gate after 3 refinement rounds, the skill stops and reports honestly rather than lowering the bar.
+
+A stack graduates from "generated on demand by the skill" to "native installer in `stacks/<name>/`" only after ≥ 3 representative projects have been indexed and the patterns generalize cleanly across them — never on a sample of one.
