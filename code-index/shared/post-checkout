@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# git passes 3 args; arg 3 = 1 means branch switch (vs single-file checkout).
+[ "$3" != "1" ] && exit 0
+exec "$(dirname "$0")/_run_code_index.sh"
