@@ -31,7 +31,7 @@ show_banner() {
 
 # ── Module definitions ────────────────────────────────────────────
 
-MODULES=("tab-titles" "handoff-kit" "supervisor" "closing" "comptable" "command-guard" "critical-thinking" "pre-commit-gate" "backlog-kit" "claude-md-kit" "setup-project" "api-contract" "scope-enforcer" "post-tool-use" "audit" "factorize")
+MODULES=("tab-titles" "handoff-kit" "supervisor" "closing" "comptable" "command-guard" "critical-thinking" "pre-commit-gate" "backlog-kit" "claude-md-kit" "setup-project" "api-contract" "scope-enforcer" "post-tool-use" "audit" "factorize" "code-index")
 DESCRIPTIONS=(
     "Smart terminal tab titles for Claude Code sessions"
     "Context monitoring, automatic backups, and session handoff"
@@ -49,6 +49,7 @@ DESCRIPTIONS=(
     "PostToolUse hook — manifest of modified files and test failure detection"
     "Deep code audit — security, tests, architecture, performance"
     "Scan for duplication & factorization opportunities across the codebase"
+    "Auto-indexed codebase navigation — Dart native, TS/Python/Go/Rust via /code-index-bootstrap"
 )
 DEPS=(
     "jq"
@@ -65,6 +66,7 @@ DEPS=(
     "jq"
     "jq"
     "jq"
+    "none"
     "none"
     "none"
 )

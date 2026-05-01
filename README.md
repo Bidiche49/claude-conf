@@ -42,6 +42,7 @@
 | [**pre-commit-gate**](pre-commit-gate/) | Reminder to run /check before committing — with universal stack detection | ![Ready](https://img.shields.io/badge/status-ready-brightgreen?style=flat-square) |
 | [**backlog-kit**](backlog-kit/) | Universal ticketing system with automatic ID protection | ![Ready](https://img.shields.io/badge/status-ready-brightgreen?style=flat-square) |
 | [**claude-md-kit**](claude-md-kit/) | Three slash commands to generate, clean up, and optimize CLAUDE.md | ![Ready](https://img.shields.io/badge/status-ready-brightgreen?style=flat-square) |
+| [**code-index**](code-index/) | Auto-indexed codebase navigation — 87-91% token saving, Dart native + TS/Python/Go/Rust via slash command | ![Ready](https://img.shields.io/badge/status-ready-brightgreen?style=flat-square) |
 
 Each module works **standalone** or as part of this collection. Install only what you need.
 
@@ -143,6 +144,14 @@ Three slash commands for managing your project's CLAUDE.md. `/claude-md-init` ge
 
 [Full documentation >>>](claude-md-kit/)
 
+### code-index
+
+Auto-indexed codebase navigation. Generates per-directory markdown outlines with line numbers under `docs/.code-map/` so Claude Code can locate symbols and read targeted slices instead of full files. Measured token saving: **87-91%** on a real Flutter codebase. Dart/Flutter is supported natively (one-command setup, AOT-compiled hooks, ~0.2s per commit). Other stacks (TypeScript, Python, Go, Rust) bootstrap on first use via the `/code-index-bootstrap` slash command, which generates a stack-equivalent indexer using the **official AST parser** of the language and validates the output against a strict format contract (≥ 50% token saving enforced).
+
+**Components:** per-project setup script, `tool/code_index.dart` indexer, 4 git hooks, `/code-index-bootstrap` slash command.
+
+[Full documentation >>>](code-index/)
+
 ## Requirements
 
 | Dependency | Required by | Install |
@@ -216,6 +225,7 @@ module-name/
 | [**pre-commit-gate**](pre-commit-gate/) | Rappel de lancer /check avant de committer — detection de stack universelle | ![Pret](https://img.shields.io/badge/statut-pret-brightgreen?style=flat-square) |
 | [**backlog-kit**](backlog-kit/) | Systeme de ticketing universel avec protection automatique des IDs | ![Pret](https://img.shields.io/badge/statut-pret-brightgreen?style=flat-square) |
 | [**claude-md-kit**](claude-md-kit/) | Trois commandes pour generer, nettoyer et optimiser CLAUDE.md | ![Pret](https://img.shields.io/badge/statut-pret-brightgreen?style=flat-square) |
+| [**code-index**](code-index/) | Navigation indexee auto — 87-91% de tokens economises, Dart natif + TS/Python/Go/Rust via slash command | ![Pret](https://img.shields.io/badge/statut-pret-brightgreen?style=flat-square) |
 
 Chaque module fonctionne **de maniere autonome** ou au sein de cette collection. Installez uniquement ce dont vous avez besoin.
 
@@ -287,6 +297,14 @@ Trois commandes slash pour gerer le CLAUDE.md de vos projets. `/claude-md-init` 
 **Composants :** commandes `/claude-md-init`, `/claude-md-cleanup`, `/claude-md-boost`.
 
 [Documentation complete >>>](claude-md-kit/)
+
+### code-index
+
+Navigation indexee automatiquement de la codebase. Genere des outlines markdown par dossier sous `docs/.code-map/`, avec numeros de ligne, pour que Claude Code localise les symboles et lise des slices ciblees au lieu de fichiers entiers. Economie mesuree : **87-91%** de tokens sur une vraie codebase Flutter. Dart/Flutter supporte nativement (setup en une commande, hooks AOT-compiles, ~0.2s par commit). Autres stacks (TypeScript, Python, Go, Rust) bootstrap au premier usage via la slash command `/code-index-bootstrap`, qui genere un indexer equivalent en utilisant le **parser AST officiel** du langage et valide automatiquement le resultat (≥ 50% d'economie de tokens, garde-fou non negociable).
+
+**Composants :** script de setup par projet, indexer `tool/code_index.dart`, 4 git hooks, slash command `/code-index-bootstrap`.
+
+[Documentation complete >>>](code-index/)
 
 ## Contribuer
 
