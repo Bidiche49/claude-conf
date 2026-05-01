@@ -17,7 +17,11 @@ SRC=tool/code_index.dart
 
 if [ ! -f "$BIN" ] || [ "$SRC" -nt "$BIN" ]; then
   mkdir -p .dart_tool
-  dart compile exe "$SRC" -o "$BIN" >/dev/null 2>&1 || exit 0
+  if ! dart compile exe "$SRC" -o "$BIN" 2>/tmp/code_index_compile.err; then
+    echo "[code_index] compile failed — index NOT regenerated, may be stale" >&2
+    sed 's/^/[code_index]   /' /tmp/code_index_compile.err >&2
+    exit 0
+  fi
 fi
 
 "$BIN" --quiet 2>/dev/null
