@@ -155,7 +155,8 @@ to modify a file not listed, note it in your report."
 ## Report [TICKET-IDS]
 
 ### Session
-- **Manifest:** [path to your manifest file in `.claude-sessions/manifests/` — run `ls -t .claude-sessions/manifests/*.txt | head -1` to find it. If not found, write "none"]
+- **Manifest:** `.claude-sessions/manifests/{your session_id}.txt`
+  (your session_id was injected as `[WORKER SESSION CONTEXT]` at session start — copy it from there. NEVER use `ls -t` to discover the manifest — it races with parallel workers and the supervisor's own writes.)
 
 ### Files modified
 - `path/to/file` — description of changes (1 line per file)
@@ -189,16 +190,21 @@ When the user brings back a worker report:
 1. **Read the report** carefully
 2. **Pre-validation via manifest** (FIRST — before any diff or file reading):
    - **Read the manifest** at the path given in the worker's report ("Manifest:" field).
-     - If the path exists → use it directly. No search needed.
-     - If the path is "none" or the file doesn't exist → **fallback: scan ALL manifests** in `.claude-sessions/manifests/` and match by content (look for files listed in the worker's "Files modified" section). Pick the most recent manifest that touches the same files.
-     - **NEVER skip manifest verification.** "No manifest path" means search harder, not skip.
-   - This is the **mechanical source of truth** — every Write/Edit the worker actually performed
+     The path is injected deterministically into the worker's context at SessionStart
+     (by `post-tool-use:session-inject`), so the worker should always provide the exact
+     path. If the file exists → use it directly.
+   - **If the path doesn't exist or the field is missing** — this is a red flag:
+     either the worker did NOT perform any Write/Edit (manifest only created on first write),
+     or the worker hand-wrote the wrong path. Confirm by checking `git diff` for the
+     reported files: if the diff matches the report, the worker simply didn't write anything
+     unusual (manifest absent is consistent). If the diff shows files NOT in the report,
+     **stop and ask the user** — do not fall back to `ls -t` which is non-deterministic.
+   - The manifest is the **mechanical source of truth** — every Write/Edit the worker actually performed.
    - Compare manifest vs "Files modified" in the report:
      - Manifest lists files NOT in report → flag divergence
      - Report lists files NOT in manifest → suspicious, investigate
    - Compare manifest vs scope file (`.claude-sessions/worker-scope/*.json` matching the ticket ID):
      - Any file in manifest but NOT in allowed_files → scope violation
-   - If NO manifest exists at all (directory empty or no match) → fall back to git diff, but **log a warning**: "No manifest found — relying on git diff only"
 3. **Check the diff (SCOPED)** — use `git diff -- file1 file2 file3` scoped to the files from the manifest (or report if no manifest). NEVER run a global `git diff` — the working tree may contain changes from other parallel workers.
 4. **Check modified files** — read each file touched, verify coherence with the ticket requirements
 5. **Run checks** — the project's linter, analyzer, test suite (from CLAUDE.md)
@@ -355,9 +361,13 @@ For each worker prompt:
    # Tab + window titles
    printf "\033]1;🟢 %s\007" "$TICKET"
    printf "\033]2;🟢 %s — %s\007" "$TICKET" "$(basename "$PWD")"
-   # Env vars for SessionStart hook (re-applies title after Ink init)
+   # Env vars for SessionStart hooks
+   #  - CC_TAB_TITLE / CC_WIN_TITLE: tab-titles re-applies title after Ink init
+   #  - CC_WORKER_TICKET: post-tool-use:session-inject injects session_id +
+   #    manifest path into the worker's context, removing the need for `ls -t`
    export CC_TAB_TITLE="🟢 $TICKET"
    export CC_WIN_TITLE="🟢 $TICKET — $(basename "$PWD")"
+   export CC_WORKER_TICKET="$TICKET"
    # Prevent Claude Code from overwriting titles
    export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1
    if [ "$MODE" = "dangerous" ]; then

@@ -399,6 +399,10 @@ cmd_sync() {
                 _sync_file "$mod" "skills/review/SKILL.md" "$HOME/.claude/skills/review/SKILL.md"
                 _sync_file "$mod" "skills/audit-conf/SKILL.md" "$HOME/.claude/skills/audit-conf/SKILL.md"
                 ;;
+            post-tool-use)
+                _sync_file "$mod" "hooks/post-tool-use.sh" "$HOME/.claude/hooks/post-tool-use.sh"
+                _sync_file "$mod" "hooks/session-inject.sh" "$HOME/.claude/hooks/post-tool-use-session-inject.sh"
+                ;;
             command-guard)
                 _sync_file "$mod" "src/cli.ts" "$HOME/.claude/scripts/command-guard/src/cli.ts"
                 _sync_file "$mod" "src/lib/validator.ts" "$HOME/.claude/scripts/command-guard/src/lib/validator.ts"
