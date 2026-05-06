@@ -118,8 +118,8 @@ Liste les fichiers/symboles critiques avec UNE ligne de description chacun. Form
 
 ### 5. CONTRAINTES (bloquantes, numerotees)
 
-Liste numerotee :
-1. Lit MAX 3 fichiers avant de formuler une hypothese.
+Liste numerotee. Formulation **a destination de la session qui recevra le prompt** — elle n'a rien lu, ne pre-decompte rien :
+1. Lis MAX 3 fichiers avant de formuler une hypothese. Choisis-les a partir des donnees D-x, pas par exploration.
 2. UNE SEULE hypothese rankee (la plus probable, justifiee par les donnees D-x).
 3. UN SEUL test decisif (qui falsifie l'hypothese si elle est fausse).
 4. Pas de refactor preventif. Pas de nettoyage. Pas de "tant qu'on y est".
@@ -137,7 +137,7 @@ Liste a puces :
 
 ### 7. PREMIERE SORTIE ATTENDUE
 
-Format strict en 5 sous-sections :
+Format strict en 5 sous-sections. Le format est impose, le **contenu** ne l'est pas — ne pre-formule pas l'hypothese, ne suggere pas la cause, laisse la session vierge raisonner a partir des donnees seules :
 
 1. **Hypothese principale** : 3 lignes max, formulation testable.
 2. **Donnees qui la supportent** : cite explicitement D1, D2, ... Dn.
@@ -265,6 +265,22 @@ Posture : forensique, pas exploratoire. Donnees > inference > test decisif > STO
 - **Langue : suis celle du user.** Si user ecrit FR, prompt FR. Si EN, prompt EN.
 - **Si une donnee est incertaine, marque-la `(a confirmer)`** plutot que de l'omettre — la session vierge demandera confirmation avant de l'utiliser.
 - **Critere de validation interne** : si tu colles ton prompt dans une session vierge, doit-elle pouvoir produire les 5 sous-sections de la PREMIERE SORTIE ATTENDUE en un seul message ? Si non, le prompt est incomplet — itere avant d'afficher.
+
+### Regle meta — ne pas enrichir le template
+
+Le template a 7 sections, exactement, telles que decrites. **N'optimise pas, n'enrichis pas, ne sois pas malin.** Toutes les "ameliorations contextuelles" qui semblent utiles sont en fait des bugs :
+
+- **Ne pre-decompte pas les fichiers deja lus dans la conv source dans la contrainte "max 3 fichiers"** — la session vierge n'a rien lu, le decompte doit partir de zero.
+- **Ne pre-formule pas la conclusion attendue dans la section PREMIERE SORTIE** — donner la forme (3 lignes, testable) suffit, le contenu doit emerger des donnees seules.
+- **Ne suggere pas de cause probable dans le ROLE ou la MISSION** — le ROLE liste les domaines techniques pertinents, pas les hypotheses.
+- **Ne resume pas, ne reformule pas les donnees ailleurs que dans GROUND-TRUTH DATA** — chaque fait apparait une fois, dans D-x.
+
+### Apres avoir affiche le bloc — STOP
+
+- **Une fois le bloc copyable affiche, termine.** Pas de post-prompt qui suggere de tester quelque chose dans la conv courante.
+- **Si la decision est "nouvelle conv", ne propose pas de faire quoi que ce soit ici apres** — toute action ici re-pollue la conv que tu viens de declarer saturee. Choisir une destination, c'est s'y tenir.
+- **Si la decision est "rester ici", le bloc de recadrage devient le nouveau point de depart de la conv** — pas de suggestion en dehors du bloc.
+- Une seule exception : si une donnee critique est marquee `(a confirmer)` ET que sa valeur change la hierarchisation des hypotheses, tu peux poser UNE question sous le bloc, formulee comme un choix binaire ("Reponds A ou B avant de basculer."). Pas de discussion ouverte.
 
 ---
 

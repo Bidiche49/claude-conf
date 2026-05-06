@@ -130,6 +130,24 @@ test_stop_keyword() {
   fi
 }
 
+# --- T9b: anti-enrichment meta-rule documented ---
+test_anti_enrichment_rule() {
+  if grep -qi 'ne pas enrichir\|n.enrichis pas\|N.optimise pas' "$SKILL_FILE"; then
+    assert_pass "anti-enrichment meta-rule present"
+  else
+    assert_fail "anti-enrichment meta-rule present"
+  fi
+}
+
+# --- T9c: post-prompt STOP rule documented ---
+test_post_prompt_stop_rule() {
+  if grep -qi 'Apres avoir affiche le bloc' "$SKILL_FILE"; then
+    assert_pass "post-prompt STOP rule present"
+  else
+    assert_fail "post-prompt STOP rule present"
+  fi
+}
+
 # --- T10: fixture exists for invocation simulation ---
 test_fixture_exists() {
   if [ -f "$FIXTURE_FILE" ]; then
@@ -160,6 +178,8 @@ test_arg_overrides
 test_examples_count
 test_skill_antipatterns
 test_stop_keyword
+test_anti_enrichment_rule
+test_post_prompt_stop_rule
 test_fixture_exists
 test_fixture_signals
 echo ""
