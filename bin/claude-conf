@@ -390,6 +390,9 @@ cmd_sync() {
             factorize)
                 _sync_file "$mod" "skills/factorize/SKILL.md" "$HOME/.claude/skills/factorize/SKILL.md"
                 ;;
+            debug-forensic)
+                _sync_file "$mod" "skills/debug-forensic/SKILL.md" "$HOME/.claude/skills/debug-forensic/SKILL.md"
+                ;;
             pre-commit-gate)
                 _sync_file "$mod" "skills/check/SKILL.md" "$HOME/.claude/skills/check/SKILL.md"
                 ;;
